@@ -1,0 +1,41 @@
+<com.heaven7.android.StickyLayout.StickyNavigationLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/stickyLayout"
+    app:stickyLayout_top_id = "@+id/top_view"
+    app:stickyLayout_indicator_id = "@+id/vp_indicator"
+    app:stickyLayout_content_id = "@+id/vp"
+    >
+
+    <RelativeLayout
+        android:id="@+id/top_view"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="#8800ff00" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="标题党--嘎嘎"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <com.heaven7.android.sticky_navigation_layout.demo.SimpleViewPagerIndicator
+        android:id="@id/vp_indicator"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#ffffffff" />
+
+    <android.support.v4.view.ViewPager
+        android:id="@id/vp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#44ff0000" >
+    </android.support.v4.view.ViewPager>
+
+</com.heaven7.android.StickyLayout.StickyNavigationLayout>

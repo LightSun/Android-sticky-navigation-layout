@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="StickyNavigationLayout">
+         <attr name="stickyLayout_top_id" format="integer|reference"/>
+         <attr name="stickyLayout_indicator_id" format="integer|reference"/>
+         <attr name="stickyLayout_content_id" format="integer|reference"/>
+    </declare-styleable>
+</resources>
