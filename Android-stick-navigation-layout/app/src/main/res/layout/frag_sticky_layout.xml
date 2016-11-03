@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.heaven7.android.StickyLayout.StickyNavigationLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/stickyLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    app:stickyLayout_content_id="@+id/vp"
+    app:stickyLayout_indicator_id="@+id/vp_indicator"
+    app:stickyLayout_top_id="@+id/top_view"
+    app:stickyLayout_auto_fit_scroll="true"
+    >
+
+    <RelativeLayout
+        android:id="@+id/top_view"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="#8800ff00">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:text="标题党--嘎嘎"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+   <!-- <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >-->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+            <com.heaven7.android.sticky_navigation_layout.demo.SimpleViewPagerIndicator
+                android:id="@id/vp_indicator"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="#ffffffff" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@mipmap/bg_shadow" />
+
+        </LinearLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+
+</com.heaven7.android.StickyLayout.StickyNavigationLayout>
+

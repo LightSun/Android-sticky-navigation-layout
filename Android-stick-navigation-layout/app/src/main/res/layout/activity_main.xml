@@ -1,41 +1,91 @@
-<com.heaven7.android.StickyLayout.StickyNavigationLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/stickyLayout"
-    app:stickyLayout_top_id = "@+id/top_view"
-    app:stickyLayout_indicator_id = "@+id/vp_indicator"
-    app:stickyLayout_content_id = "@+id/vp"
     >
 
-    <RelativeLayout
-        android:id="@+id/top_view"
+    <RadioGroup
+        android:id="@+id/rg"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:background="#8800ff00" >
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom"
+        android:layout_alignParentBottom="true"
+        >
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="标题党--嘎嘎"
-            android:textSize="30sp"
-            android:textStyle="bold" />
-    </RelativeLayout>
+        <RadioButton
+            android:id="@+id/rb_first_page"
+            style="@style/radio_button"
+            android:drawableTop="@mipmap/ic_launcher"
+            android:checked="false"
+            android:text="@string/tab_first_page"
+            />
+        <RadioButton
+            android:id="@+id/rb_chuzhen"
+            style="@style/radio_button"
+            android:drawableTop="@mipmap/ic_launcher"
+            android:checked="false"
+            android:text="@string/tab_chuzhen_page"
+            />
+        <RadioButton
+            android:id="@+id/rb_circle"
+            style="@style/radio_button"
+            android:drawableTop="@mipmap/ic_launcher"
+            android:checked="false"
+            android:text="@string/tab_circle"
+            />
+        <RadioButton
+            android:id="@+id/rb_msg"
+            style="@style/radio_button"
+            android:drawableTop="@mipmap/ic_launcher"
+            android:checked="false"
+            android:text="@string/tab_message"
+            />
+    </RadioGroup>
 
-    <com.heaven7.android.sticky_navigation_layout.demo.SimpleViewPagerIndicator
-        android:id="@id/vp_indicator"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="#ffffffff" />
-
-    <android.support.v4.view.ViewPager
-        android:id="@id/vp"
+    <com.heaven7.android.StickyLayout.StickyNavigationLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#44ff0000" >
-    </android.support.v4.view.ViewPager>
+        android:orientation="vertical"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/stickyLayout"
+        app:stickyLayout_top_id = "@+id/top_view"
+        app:stickyLayout_indicator_id = "@+id/vp_indicator"
+        app:stickyLayout_content_id = "@+id/vp"
+        android:layout_above="@+id/rg"
+        >
 
-</com.heaven7.android.StickyLayout.StickyNavigationLayout>
+        <RelativeLayout
+            android:id="@+id/top_view"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="#8800ff00" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:gravity="center"
+                android:text="标题党--嘎嘎"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <com.heaven7.android.sticky_navigation_layout.demo.SimpleViewPagerIndicator
+            android:id="@id/vp_indicator"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#ffffffff" />
+
+        <android.support.v4.view.ViewPager
+            android:id="@id/vp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#44ff0000" >
+        </android.support.v4.view.ViewPager>
+
+
+    </com.heaven7.android.StickyLayout.StickyNavigationLayout>
+
+
+</RelativeLayout>

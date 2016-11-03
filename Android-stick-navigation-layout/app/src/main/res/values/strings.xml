@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Android-sticky-navigation-layout</string>
+
+    <string name="tab_first_page">tab_首页</string>
+    <string name="tab_chuzhen_page">tab_出诊</string>
+    <string name="tab_circle">tab_圈子</string>
+    <string name="tab_message">tab_消息</string>
+    <string name="tab_mine">tab_我的</string>
 </resources>

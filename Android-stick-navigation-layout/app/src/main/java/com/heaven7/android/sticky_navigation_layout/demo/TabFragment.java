@@ -2,6 +2,7 @@ package com.heaven7.android.sticky_navigation_layout.demo;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -19,14 +20,19 @@ import com.heaven7.core.util.ViewHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TabFragment extends Fragment implements StickyNavigationLayout.IStickyDelegate {
+public class TabFragment extends Fragment implements StickyNavigationLayout.IStickyDelegate , StickyDelegateSupplier{
 
     public static final String TITLE = "title";
 
     private String mTitle = "Defaut Value";
-    private RecyclerView mListView;
+    private RecyclerView mRecyclerView;
     private List<Data> mDatas = new ArrayList<Data>();
 
+    private SwipeRefreshLayout swipeView ;
+    private QuickRecycleViewAdapter<Data> mAdapter;
+
+
+    private StickyNavigationLayout.RecyclerViewStickyDelegate mDelegate;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,10 +45,10 @@ public class TabFragment extends Fragment implements StickyNavigationLayout.ISti
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_tab, container, false);
-        mListView = (RecyclerView) view.findViewById(R.id.rv);
-        mListView.setLayoutManager(new LinearLayoutManager(container.getContext()));
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.rv);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(container.getContext()));
 
-        final SwipeRefreshLayout swipeView = (SwipeRefreshLayout) view.findViewById(R.id.swipe);
+        swipeView = (SwipeRefreshLayout) view.findViewById(R.id.swipe);
         swipeView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -57,7 +63,7 @@ public class TabFragment extends Fragment implements StickyNavigationLayout.ISti
         for (int i = 0; i < 50; i++) {
             mDatas.add(new Data(mTitle + " -> " + i));
         }
-        mListView.setAdapter(new QuickRecycleViewAdapter<Data>(R.layout.item, mDatas) {
+        mRecyclerView.setAdapter(mAdapter = new QuickRecycleViewAdapter<Data>(R.layout.item, mDatas) {
             @Override
             protected void onBindData(Context context, int position, Data item, int itemLayoutId, ViewHelper helper) {
                 helper.setText(R.id.id_info, item.title)
@@ -69,8 +75,22 @@ public class TabFragment extends Fragment implements StickyNavigationLayout.ISti
                         });
             }
         });
+        mDelegate = new StickyNavigationLayout.RecyclerViewStickyDelegate(mRecyclerView);
         return view;
+    }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+       /* MainWorker.postDelay(5000, new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < 50; i++) {
+                    mDatas.add(new Data(mTitle + " -> " + i));
+                }
+                mAdapter.getAdapterManager().addItems(mDatas);
+            }
+        });*/
     }
 
     public static TabFragment newInstance(String title) {
@@ -83,8 +103,8 @@ public class TabFragment extends Fragment implements StickyNavigationLayout.ISti
 
     @Override
     public boolean shouldIntercept(StickyNavigationLayout snv, int dy, int topViewState) {
-        final int position = MainActivity.findFirstVisibleItemPosition(mListView);
-        final View child = mListView.getChildAt(position);
+        final int position = MainActivity.findFirstVisibleItemPosition(mRecyclerView);
+        final View child = mRecyclerView.getChildAt(position);
         boolean isTopHidden = topViewState == StickyNavigationLayout.VIEW_STATE_HIDE;
         if (!isTopHidden || (child != null && child.getTop() == 0 && dy > 0)) {
             //listview 滑动到顶部，并且要继续向下滑动时，拦截触摸
@@ -94,9 +114,15 @@ public class TabFragment extends Fragment implements StickyNavigationLayout.ISti
     }
 
     @Override
-    public void scrollBy(int dy) {
-        mListView.scrollBy(0, -dy);
+    public void scrollBy(StickyNavigationLayout snv, int dy) {
+        mRecyclerView.scrollBy(0, -dy);
     }
+
+    @Override
+    public StickyNavigationLayout.IStickyDelegate getStickyDelegate() {
+        return mDelegate;
+    }
+
 
     private static class Data extends BaseSelector {
         String title;

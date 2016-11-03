@@ -4,5 +4,6 @@
          <attr name="stickyLayout_top_id" format="integer|reference"/>
          <attr name="stickyLayout_indicator_id" format="integer|reference"/>
          <attr name="stickyLayout_content_id" format="integer|reference"/>
+         <attr name="stickyLayout_auto_fit_scroll" format="boolean|reference"/>
     </declare-styleable>
 </resources>
