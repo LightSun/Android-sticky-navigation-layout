@@ -39,7 +39,9 @@ public class StickyNavigationLayout extends LinearLayout {
 
     private static final String TAG = "StickyNavLayout";
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG                 = true;
+    private static final boolean DEBUG_DISPATCH_EVENT  = false;
+
     private static final long ANIMATED_SCROLL_GAP = 250;
 
     /**
@@ -342,7 +344,7 @@ public class StickyNavigationLayout extends LinearLayout {
                         if (scrollY == mTopViewHeight) {
                             //分发给child
                                 mGroupStickyDelegate.scrollBy(this, dy);
-                                // return mStickyDelegate.dispatchTouchEventToChild(event);
+                                //mGroupStickyDelegate.dispatchTouchEventToChild(this, event);
                         } else if (scrollY - dy > mTopViewHeight) {
                             //top height is the max scroll height
                             scrollTo(getScrollX(), mTopViewHeight);
@@ -354,7 +356,7 @@ public class StickyNavigationLayout extends LinearLayout {
                         if (scrollY == 0) {
                             //分发事件给child
                             mGroupStickyDelegate.scrollBy(this, dy);
-                            // return mStickyDelegate.dispatchTouchEventToChild(event);
+                           // mGroupStickyDelegate.dispatchTouchEventToChild(this, event);
                         } else {
                             if (scrollY - dy < 0) {
                                 dy = scrollY;
@@ -718,6 +720,13 @@ public class StickyNavigationLayout extends LinearLayout {
                 delegate.afterOnMeasure(snv,top, indicator, contentView);
             }
         }
+
+        @Override
+        public void dispatchTouchEventToChild(StickyNavigationLayout snv,MotionEvent event) {
+            for(IStickyDelegate delegate : mDelegates){
+                delegate.dispatchTouchEventToChild(snv,event);
+            }
+        }
     }
 
     /**
@@ -788,6 +797,9 @@ public class StickyNavigationLayout extends LinearLayout {
          *
          */
         void afterOnMeasure(StickyNavigationLayout snv, View top, View indicator, View contentView);
+
+
+        void dispatchTouchEventToChild(StickyNavigationLayout snv,MotionEvent event);
     }
 
     /**
@@ -804,6 +816,10 @@ public class StickyNavigationLayout extends LinearLayout {
         }
         @Override
         public void afterOnMeasure(StickyNavigationLayout snv, View top, View indicator, View contentView) {
+
+        }
+        @Override
+        public void dispatchTouchEventToChild(StickyNavigationLayout snv,MotionEvent event) {
 
         }
     }
@@ -832,6 +848,9 @@ public class StickyNavigationLayout extends LinearLayout {
         }
         @Override
         public void scrollBy(StickyNavigationLayout snv, int dy) {
+            if(DEBUG_DISPATCH_EVENT){
+                return;
+            }
             final RecyclerView view = mWeakRecyclerView.get();
             if (view != null) {
                 view.scrollBy(0, -dy);
@@ -844,6 +863,14 @@ public class StickyNavigationLayout extends LinearLayout {
         @Override
         public void afterOnMeasure(StickyNavigationLayout snv, View top, View indicator, View contentView) {
 
+        }
+
+        @Override
+        public void dispatchTouchEventToChild(StickyNavigationLayout snv,MotionEvent event) {
+            final RecyclerView view = mWeakRecyclerView.get();
+            if (view != null) {
+                view.dispatchTouchEvent(event);
+            }
         }
 
         public static int findFirstVisibleItemPosition(RecyclerView rv) {

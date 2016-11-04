@@ -98,7 +98,7 @@ public class TabFragment extends Fragment implements  StickyDelegateSupplier{
     }
 
 
-    private static class Data extends BaseSelector {
+    public static class Data extends BaseSelector {
         String title;
 
         public Data(String title) {

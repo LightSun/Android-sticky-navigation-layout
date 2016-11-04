@@ -2,15 +2,24 @@ package com.heaven7.android.sticky_navigation_layout.demo;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.heaven7.adapter.QuickRecycleViewAdapter;
 import com.heaven7.android.StickyLayout.StickyNavigationLayout;
 import com.heaven7.core.util.Logger;
+import com.heaven7.core.util.ViewHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.InjectView;
 
@@ -40,9 +49,13 @@ public class StickyFragment extends BaseFragment {
     @InjectView(R.id.ll_indicator)
     LinearLayout mLl_indicator;
 
+    @InjectView(R.id.rv_subscribe)
+    RecyclerView mRv_subscribe;
+
     private String[] mTitles = new String[] { "简介", "评价", "相关" };
     private TabFragment[] mFragments = new TabFragment[mTitles.length];
     private FragmentPagerAdapter mAdapter;
+    private QuickRecycleViewAdapter<TabFragment.Data> mSubscribeAdapter;
 
     @Override
     protected int getLayoutId() {
@@ -92,17 +105,36 @@ public class StickyFragment extends BaseFragment {
             mLl_indicator.setVisibility(View.GONE);
             mViewPager.setVisibility(View.GONE);
             mVg_subscribe.setVisibility(View.VISIBLE);
+            mStickyNavLayout.setEnableStickyTouch(false);
             Logger.i(TAG, "switchMode" , "to mode: MODE_SUBSCRIBE");
         }else{
             mMode = MODE_FEED;
             mVg_subscribe.setVisibility(View.GONE);
             mLl_indicator.setVisibility(View.VISIBLE);
             mViewPager.setVisibility(View.VISIBLE);
+            mStickyNavLayout.setEnableStickyTouch(true);
             Logger.i(TAG, "switchMode" , "to mode: MODE_FEED");
         }
     }
 
     private void initDatas() {
+        List<TabFragment.Data> mDatas = new ArrayList<>();
+        for (int i = 0; i < 50; i++) {
+            mDatas.add(new TabFragment.Data(" title -> " + i));
+        }
+        mRv_subscribe.setLayoutManager(new LinearLayoutManager(getContext()));
+        mRv_subscribe.setAdapter(mSubscribeAdapter = new QuickRecycleViewAdapter<TabFragment.Data>(R.layout.item, mDatas) {
+            @Override
+            protected void onBindData(Context context, int position, TabFragment.Data item, int itemLayoutId, ViewHelper helper) {
+                helper.setText(R.id.id_info, item.title)
+                        .setRootOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Snackbar.make(v, R.string.action_settings, Snackbar.LENGTH_LONG).show();
+                            }
+                        });
+            }
+        });
         mIndicator.setTitles(mTitles);
         for (int i = 0; i < mTitles.length; i++) {
             mFragments[i] = TabFragment.newInstance(mTitles[i]);
@@ -150,6 +182,13 @@ public class StickyFragment extends BaseFragment {
             lp.height = snv.getMeasuredHeight() - snv.getScrollY();
             mVg_subscribe.setLayoutParams(lp);
             Logger.i(TAG, "afterOnMeasure" , "mVg_subscribe: height = " + lp.height +" ,snv.scrollY = " + snv.getScrollY());
+        }
+        @Override
+        public void dispatchTouchEventToChild(StickyNavigationLayout snv, MotionEvent event) {
+            final StickyNavigationLayout.IStickyDelegate stickyDelegate = getChildStickyDelegate();
+            if(stickyDelegate != null){
+                stickyDelegate.dispatchTouchEventToChild(snv , event);
+            }
         }
     };
 }

@@ -8,7 +8,7 @@
     app:stickyLayout_content_id="@+id/vp"
     app:stickyLayout_indicator_id="@+id/vp_indicator"
     app:stickyLayout_top_id="@+id/top_view"
-    app:stickyLayout_auto_fit_scroll="true"
+    app:stickyLayout_auto_fit_scroll="false"
     >
 
     <RelativeLayout
@@ -27,24 +27,30 @@
             android:textStyle="bold" />
     </RelativeLayout>
 
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/fl_subscribe"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         android:background="@android:color/holo_green_light"
         android:visibility="gone"
         >
-
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
             android:gravity="center"
-            android:text="--------订阅-----"
+            android:text="-----订阅-----"
             android:textSize="30sp"
             android:textStyle="bold" />
 
-    </FrameLayout>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_subscribe"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </android.support.v7.widget.RecyclerView>
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/ll_indicator"
