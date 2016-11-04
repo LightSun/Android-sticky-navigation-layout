@@ -20,7 +20,7 @@ import com.heaven7.core.util.ViewHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TabFragment extends Fragment implements StickyNavigationLayout.IStickyDelegate , StickyDelegateSupplier{
+public class TabFragment extends Fragment implements  StickyDelegateSupplier{
 
     public static final String TITLE = "title";
 
@@ -31,8 +31,8 @@ public class TabFragment extends Fragment implements StickyNavigationLayout.ISti
     private SwipeRefreshLayout swipeView ;
     private QuickRecycleViewAdapter<Data> mAdapter;
 
-
     private StickyNavigationLayout.RecyclerViewStickyDelegate mDelegate;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +47,7 @@ public class TabFragment extends Fragment implements StickyNavigationLayout.ISti
         View view = inflater.inflate(R.layout.fragment_tab, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rv);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(container.getContext()));
+        mDelegate = new StickyNavigationLayout.RecyclerViewStickyDelegate(mRecyclerView);
 
         swipeView = (SwipeRefreshLayout) view.findViewById(R.id.swipe);
         swipeView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -75,22 +76,12 @@ public class TabFragment extends Fragment implements StickyNavigationLayout.ISti
                         });
             }
         });
-        mDelegate = new StickyNavigationLayout.RecyclerViewStickyDelegate(mRecyclerView);
         return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-       /* MainWorker.postDelay(5000, new Runnable() {
-            @Override
-            public void run() {
-                for (int i = 0; i < 50; i++) {
-                    mDatas.add(new Data(mTitle + " -> " + i));
-                }
-                mAdapter.getAdapterManager().addItems(mDatas);
-            }
-        });*/
     }
 
     public static TabFragment newInstance(String title) {
@@ -99,23 +90,6 @@ public class TabFragment extends Fragment implements StickyNavigationLayout.ISti
         bundle.putString(TITLE, title);
         tabFragment.setArguments(bundle);
         return tabFragment;
-    }
-
-    @Override
-    public boolean shouldIntercept(StickyNavigationLayout snv, int dy, int topViewState) {
-        final int position = MainActivity.findFirstVisibleItemPosition(mRecyclerView);
-        final View child = mRecyclerView.getChildAt(position);
-        boolean isTopHidden = topViewState == StickyNavigationLayout.VIEW_STATE_HIDE;
-        if (!isTopHidden || (child != null && child.getTop() == 0 && dy > 0)) {
-            //listview 滑动到顶部，并且要继续向下滑动时，拦截触摸
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public void scrollBy(StickyNavigationLayout snv, int dy) {
-        mRecyclerView.scrollBy(0, -dy);
     }
 
     @Override

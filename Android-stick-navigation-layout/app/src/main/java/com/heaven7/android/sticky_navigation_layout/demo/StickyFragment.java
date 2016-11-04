@@ -2,13 +2,15 @@ package com.heaven7.android.sticky_navigation_layout.demo;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.heaven7.android.StickyLayout.StickyNavigationLayout;
+import com.heaven7.core.util.Logger;
 
 import butterknife.InjectView;
 
@@ -17,17 +19,26 @@ import butterknife.InjectView;
  */
 public class StickyFragment extends BaseFragment {
 
+    private static final String TAG = "StickyFragment";
+
+    private static final int MODE_FEED       = 1;
+    private static final int MODE_SUBSCRIBE  = 2;
+    private int mMode = MODE_FEED;
+
      @InjectView(R.id.stickyLayout)
      StickyNavigationLayout mStickyNavLayout;
 
      @InjectView(R.id.vp_indicator)
      SimpleViewPagerIndicator mIndicator;
-
      @InjectView(R.id.vp)
      ViewPager mViewPager;
-
      @InjectView(R.id.top_view)
      View mTopView;
+
+    @InjectView(R.id.fl_subscribe)
+    ViewGroup mVg_subscribe;
+    @InjectView(R.id.ll_indicator)
+    LinearLayout mLl_indicator;
 
     private String[] mTitles = new String[] { "简介", "评价", "相关" };
     private TabFragment[] mFragments = new TabFragment[mTitles.length];
@@ -48,13 +59,13 @@ public class StickyFragment extends BaseFragment {
         mTopView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Snackbar.make(v, R.string.action_settings, Snackbar.LENGTH_LONG).show();
+                switchMode();
+               // Snackbar.make(v, R.string.action_settings, Snackbar.LENGTH_LONG).show();
             }
         });
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                setStickyDelegate();
             }
 
             /**
@@ -75,6 +86,22 @@ public class StickyFragment extends BaseFragment {
         });
     }
 
+    private void switchMode() {
+        if(mMode == MODE_FEED){
+            mMode = MODE_SUBSCRIBE;
+            mLl_indicator.setVisibility(View.GONE);
+            mViewPager.setVisibility(View.GONE);
+            mVg_subscribe.setVisibility(View.VISIBLE);
+            Logger.i(TAG, "switchMode" , "to mode: MODE_SUBSCRIBE");
+        }else{
+            mMode = MODE_FEED;
+            mVg_subscribe.setVisibility(View.GONE);
+            mLl_indicator.setVisibility(View.VISIBLE);
+            mViewPager.setVisibility(View.VISIBLE);
+            Logger.i(TAG, "switchMode" , "to mode: MODE_FEED");
+        }
+    }
+
     private void initDatas() {
         mIndicator.setTitles(mTitles);
         for (int i = 0; i < mTitles.length; i++) {
@@ -92,13 +119,37 @@ public class StickyFragment extends BaseFragment {
         };
         mViewPager.setAdapter(mAdapter);
         mViewPager.setCurrentItem(0);
-        setStickyDelegate();
+        mStickyNavLayout.addStickyDelegate(mStickyDelegate);
     }
 
-    private void setStickyDelegate() {
+    private StickyNavigationLayout.IStickyDelegate getChildStickyDelegate() {
         final Fragment item = mAdapter.getItem(mViewPager.getCurrentItem());
         if(item instanceof StickyDelegateSupplier) {
-            mStickyNavLayout.setStickyDelegate(((StickyDelegateSupplier) item).getStickyDelegate());
+           return ((StickyDelegateSupplier) item).getStickyDelegate();
         }
+        Logger.i(TAG, "getChildStickyDelegate", "can't find ChildStickyDelegate.");
+        return null;
     }
+
+    private final StickyNavigationLayout.IStickyDelegate mStickyDelegate = new StickyNavigationLayout.IStickyDelegate() {
+        @Override
+        public boolean shouldIntercept(StickyNavigationLayout snv, int dy, int topViewState) {
+            final StickyNavigationLayout.IStickyDelegate stickyDelegate = getChildStickyDelegate();
+            return stickyDelegate !=null && stickyDelegate.shouldIntercept(snv, dy, topViewState);
+        }
+        @Override
+        public void scrollBy(StickyNavigationLayout snv, int dy) {
+            final StickyNavigationLayout.IStickyDelegate stickyDelegate = getChildStickyDelegate();
+             if(stickyDelegate != null){
+                 stickyDelegate.scrollBy(snv , dy);
+             }
+        }
+        @Override
+        public void afterOnMeasure(StickyNavigationLayout snv, View top,View indicator, View contentView) {
+            final ViewGroup.LayoutParams lp = mVg_subscribe.getLayoutParams();
+            lp.height = snv.getMeasuredHeight() - snv.getScrollY();
+            mVg_subscribe.setLayoutParams(lp);
+            Logger.i(TAG, "afterOnMeasure" , "mVg_subscribe: height = " + lp.height +" ,snv.scrollY = " + snv.getScrollY());
+        }
+    };
 }

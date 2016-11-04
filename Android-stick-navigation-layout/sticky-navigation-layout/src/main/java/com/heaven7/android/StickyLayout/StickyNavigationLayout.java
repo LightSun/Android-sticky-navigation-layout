@@ -23,6 +23,7 @@ import android.widget.OverScroller;
 import com.heaven7.core.util.Logger;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
 /**
  * sticky navigation layout：similar to google+ app.
@@ -32,7 +33,7 @@ import java.lang.ref.WeakReference;
  * </p>
  *
  * @author heaven7
- * @attr ref {com.heaven7.android.sticky_navigation_layout.demo.R.styleable#stickyLayout_content_id}
+ * @attr ref com.heaven7.android.sticky_navigation_layout.demo.R.styleable#stickyLayout_content_id
  */
 public class StickyNavigationLayout extends LinearLayout {
 
@@ -75,10 +76,14 @@ public class StickyNavigationLayout extends LinearLayout {
      * the child view which will be intercept
      */
     private View mContentView;
+    private  int mTopViewId;
+    private  int mIndicatorId;
+    private  int mContentId;
 
     private int mTopViewHeight;
     private boolean mTopHide = false;
 
+    private GroupStickyDelegate mGroupStickyDelegate;
     private OverScroller mScroller;
     private VelocityTracker mVelocityTracker;
     private int mTouchSlop;
@@ -87,11 +92,6 @@ public class StickyNavigationLayout extends LinearLayout {
     private int mLastY;
     private boolean mDragging;
 
-    private  int mTopViewId;
-    private  int mIndicatorId;
-    private  int mContentId;
-
-    private IStickyDelegate mStickyDelegate;
     private OnScrollChangeListener mScrollListener;
 
     private boolean mNeedIntercept;
@@ -109,7 +109,11 @@ public class StickyNavigationLayout extends LinearLayout {
     /**
      * auto fit the sticky scroll
      */
-    private boolean mAutoFitScroll;
+    private final boolean mAutoFitScroll;
+    /**
+     * the percent of auto fix.
+     */
+    private float mAutoFitPercent = 0.5f;
     /**
      * code set the sticky view ,not from xml.
      */
@@ -118,6 +122,7 @@ public class StickyNavigationLayout extends LinearLayout {
     public StickyNavigationLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         //setOrientation(LinearLayout.VERTICAL);
+        mGroupStickyDelegate = new GroupStickyDelegate();
 
         mScroller = new OverScroller(context);
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();//触摸阙值
@@ -126,12 +131,14 @@ public class StickyNavigationLayout extends LinearLayout {
 
         final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.StickyNavigationLayout);
         // mCodeSet will set stick view from onFinishInflate.
+
         if(!mCodeSet) {
-            mTopViewId = a.getResourceId(a.getIndex(R.styleable.StickyNavigationLayout_stickyLayout_top_id), 0);
-            mIndicatorId = a.getResourceId(a.getIndex(R.styleable.StickyNavigationLayout_stickyLayout_indicator_id), 0);
-            mContentId = a.getResourceId(a.getIndex(R.styleable.StickyNavigationLayout_stickyLayout_content_id), 0);
+            mTopViewId = a.getResourceId(R.styleable.StickyNavigationLayout_stickyLayout_top_id, 0);
+            mIndicatorId = a.getResourceId(R.styleable.StickyNavigationLayout_stickyLayout_indicator_id, 0);
+            mContentId = a.getResourceId(R.styleable.StickyNavigationLayout_stickyLayout_content_id, 0);
         }
-        mAutoFitScroll = a.getBoolean(a.getIndex(R.styleable.StickyNavigationLayout_stickyLayout_auto_fit_scroll), false);
+        mAutoFitScroll = a.getBoolean(R.styleable.StickyNavigationLayout_stickyLayout_auto_fit_scroll, false);
+        mAutoFitPercent = a.getFloat(R.styleable.StickyNavigationLayout_stickyLayout_threshold_percent, 0.5f);
         a.recycle();
 
         //getWindowVisibleDisplayFrame(mExpectTopRect);
@@ -154,6 +161,7 @@ public class StickyNavigationLayout extends LinearLayout {
             // 设置view的高度 (将mViewPager。的高度设置为  整个 Height - 导航的高度) - 被拦截的child view
             ViewGroup.LayoutParams params = mContentView.getLayoutParams();
             params.height = getMeasuredHeight() - mIndicator.getMeasuredHeight();
+            mGroupStickyDelegate.afterOnMeasure(this, mTop, mIndicator, mContentView);
             if (DEBUG) {
                 Logger.i(TAG, "onMeasure", "height = " + params.height + ", snv height = " + getMeasuredHeight());
                 Logger.i(TAG, "onMeasure", "---> snv  bottom= " + getBottom());
@@ -198,7 +206,7 @@ public class StickyNavigationLayout extends LinearLayout {
      * @param indicator the indicator view
      * @param content     the content view
      */
-    public void setStickyViews(View top, View indicator, View content) {
+    /*public*/ void setStickyViews(View top, View indicator, View content) {
         if (top == null || indicator == null || content == null) {
             throw new NullPointerException();
         }
@@ -214,12 +222,28 @@ public class StickyNavigationLayout extends LinearLayout {
 
 
     /**
-     * set the sticky delegate
-     *
+     * use {@link #addStickyDelegate(IStickyDelegate)} instead.
+     * set the sticky delegate.
      * @param delegate the delegate
      */
+    @Deprecated
     public void setStickyDelegate(IStickyDelegate delegate) {
-        this.mStickyDelegate = delegate;
+        mGroupStickyDelegate.addStickyDelegate(delegate);
+    }
+
+    /**
+     * add a sticky delegate
+     * @param delegate sticky delegate.
+     */
+    public void addStickyDelegate(IStickyDelegate delegate){
+        mGroupStickyDelegate.addStickyDelegate(delegate);
+    }
+    /**
+     * remove a sticky delegate
+     * @param delegate sticky delegate.
+     */
+    public void removeStickyDelegate(IStickyDelegate delegate){
+        mGroupStickyDelegate.removeStickyDelegate(delegate);
     }
 
     /**
@@ -258,7 +282,7 @@ public class StickyNavigationLayout extends LinearLayout {
                     if (dy > 0) {
                         return getScrollY() == mTopViewHeight;
                     }
-                    if (mStickyDelegate != null && mStickyDelegate.shouldIntercept(this, dy,
+                    if (mGroupStickyDelegate.shouldIntercept(this, dy,
                             mTopHide ? VIEW_STATE_HIDE : VIEW_STATE_SHOW)) {
                         mDragging = true;
                         return true;
@@ -317,10 +341,8 @@ public class StickyNavigationLayout extends LinearLayout {
                          */
                         if (scrollY == mTopViewHeight) {
                             //分发给child
-                            if (mStickyDelegate != null) {
-                                mStickyDelegate.scrollBy(this, dy);
+                                mGroupStickyDelegate.scrollBy(this, dy);
                                 // return mStickyDelegate.dispatchTouchEventToChild(event);
-                            }
                         } else if (scrollY - dy > mTopViewHeight) {
                             //top height is the max scroll height
                             scrollTo(getScrollX(), mTopViewHeight);
@@ -331,10 +353,8 @@ public class StickyNavigationLayout extends LinearLayout {
                         //手势向下
                         if (scrollY == 0) {
                             //分发事件给child
-                            if (mStickyDelegate != null) {
-                                mStickyDelegate.scrollBy(this, dy);
-                                // return mStickyDelegate.dispatchTouchEventToChild(event);
-                            }
+                            mGroupStickyDelegate.scrollBy(this, dy);
+                            // return mStickyDelegate.dispatchTouchEventToChild(event);
                         } else {
                             if (scrollY - dy < 0) {
                                 dy = scrollY;
@@ -368,19 +388,20 @@ public class StickyNavigationLayout extends LinearLayout {
                         smoothScrollTo(0, mTotalDy < 0 ? mTopViewHeight : 0);
                     }
                 } else {
+                    //check auto fit scroll
                     if (mAutoFitScroll) {
                         //check whole gesture.
                         if (mTotalDy < 0) {
                             //finger up
                             //if larger the 1/2 * maxHeight go to maxHeight
-                            if (Math.abs(mTotalDy) > mTopViewHeight / 2) {
+                            if (Math.abs(mTotalDy) >= mTopViewHeight * mAutoFitPercent) {
                                 smoothScrollTo(0, mTopViewHeight);
                             } else {
                                 smoothScrollTo(0, 0);
                             }
                         } else {
                             //finger down
-                            if (Math.abs(mTotalDy) > mTopViewHeight / 2) {
+                            if (Math.abs(mTotalDy) >= mTopViewHeight * mAutoFitPercent) {
                                 smoothScrollTo(0, 0);
                             } else {
                                 smoothScrollTo(0, mTopViewHeight);
@@ -603,7 +624,6 @@ public class StickyNavigationLayout extends LinearLayout {
             this.mContentId =  ss.mContentId ;
         }
     }
-
     protected static class SaveState extends BaseSavedState {
 
         boolean mNeedIntercept;
@@ -659,6 +679,45 @@ public class StickyNavigationLayout extends LinearLayout {
                 return new SaveState[size];
             }
         };
+    }
+
+    /**
+     * the internal group Sticky Delegate.
+     */
+    private class GroupStickyDelegate implements IStickyDelegate{
+
+        private final ArrayList<IStickyDelegate> mDelegates = new ArrayList<>(5);
+
+        public void addStickyDelegate(IStickyDelegate delegate){
+            mDelegates.add(delegate);
+        }
+        public void removeStickyDelegate(IStickyDelegate delegate){
+            mDelegates.remove(delegate);
+        }
+        public void clear(){
+            mDelegates.clear();
+        }
+        @Override
+        public boolean shouldIntercept(StickyNavigationLayout snv, int dy, int topViewState) {
+            for(IStickyDelegate delegate : mDelegates){
+                if(delegate.shouldIntercept(snv, dy, topViewState)){
+                    return true;
+                }
+            }
+            return false;
+        }
+        @Override
+        public void scrollBy(StickyNavigationLayout snv, int dy) {
+            for(IStickyDelegate delegate : mDelegates){
+                delegate.scrollBy(snv, dy);
+            }
+        }
+        @Override
+        public void afterOnMeasure(StickyNavigationLayout snv, View top, View indicator, View contentView) {
+            for(IStickyDelegate delegate : mDelegates){
+                delegate.afterOnMeasure(snv,top, indicator, contentView);
+            }
+        }
     }
 
     /**
@@ -719,6 +778,34 @@ public class StickyNavigationLayout extends LinearLayout {
          */
         void scrollBy(StickyNavigationLayout snv, int dy);
 
+        /**
+         *  called after the {@link StickyNavigationLayout#onMeasure(int, int)}. this is useful used when we want to
+         *  toggle two views visibility(or else may cause bug). see it in demo.
+         * @param snv the {@link StickyNavigationLayout}
+         * @param top the top view
+         * @param indicator the indicator view
+         * @param contentView the content view
+         *
+         */
+        void afterOnMeasure(StickyNavigationLayout snv, View top, View indicator, View contentView);
+    }
+
+    /**
+     * a simple implements of {@link IStickyDelegate}
+     */
+    public static class SimpleStickyDelegate implements IStickyDelegate{
+        @Override
+        public boolean shouldIntercept(StickyNavigationLayout snv, int dy, int topViewState) {
+            return false;
+        }
+        @Override
+        public void scrollBy(StickyNavigationLayout snv, int dy) {
+
+        }
+        @Override
+        public void afterOnMeasure(StickyNavigationLayout snv, View top, View indicator, View contentView) {
+
+        }
     }
 
     public static class RecyclerViewStickyDelegate implements IStickyDelegate {
@@ -743,7 +830,6 @@ public class StickyNavigationLayout extends LinearLayout {
             }
             return false;
         }
-
         @Override
         public void scrollBy(StickyNavigationLayout snv, int dy) {
             final RecyclerView view = mWeakRecyclerView.get();
@@ -754,6 +840,10 @@ public class StickyNavigationLayout extends LinearLayout {
                     Logger.i(TAG, "scrollBy", "StickyNavigationLayout height = " + snv.getMeasuredHeight());
                 }
             }
+        }
+        @Override
+        public void afterOnMeasure(StickyNavigationLayout snv, View top, View indicator, View contentView) {
+
         }
 
         public static int findFirstVisibleItemPosition(RecyclerView rv) {
