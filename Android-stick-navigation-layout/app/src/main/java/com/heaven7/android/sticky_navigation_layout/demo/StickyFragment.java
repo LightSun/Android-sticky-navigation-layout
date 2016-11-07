@@ -51,11 +51,14 @@ public class StickyFragment extends BaseFragment {
 
     @InjectView(R.id.rv_subscribe)
     RecyclerView mRv_subscribe;
+    @InjectView(R.id.rv_tabs)
+    RecyclerView mRv_tabs;
 
     private String[] mTitles = new String[] { "简介", "评价", "相关" };
     private TabFragment[] mFragments = new TabFragment[mTitles.length];
     private FragmentPagerAdapter mAdapter;
     private QuickRecycleViewAdapter<TabFragment.Data> mSubscribeAdapter;
+
 
     @Override
     protected int getLayoutId() {
@@ -152,6 +155,20 @@ public class StickyFragment extends BaseFragment {
         mViewPager.setAdapter(mAdapter);
         mViewPager.setCurrentItem(0);
         mStickyNavLayout.addStickyDelegate(mStickyDelegate);
+
+        mRv_tabs.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        mRv_tabs.setAdapter(new QuickRecycleViewAdapter<TabFragment.Data>(R.layout.item_hor_tab, mDatas) {
+            @Override
+            protected void onBindData(Context context, int position, TabFragment.Data item, int itemLayoutId, ViewHelper helper) {
+                helper.setText(R.id.tv_tab, item.title)
+                        .setRootOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Snackbar.make(v, R.string.action_settings, Snackbar.LENGTH_LONG).show();
+                            }
+                        });
+            }
+        });
     }
 
     private StickyNavigationLayout.IStickyDelegate getChildStickyDelegate() {
