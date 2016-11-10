@@ -39,7 +39,7 @@ import java.util.ArrayList;
  * @author heaven7
  * @attr ref com.heaven7.android.sticky_navigation_layout.demo.R.styleable#stickyLayout_content_id
  */
-public class StickyNavigationLayout extends LinearLayout implements NestedScrollingParent , NestedScrollingChild{
+public class StickyNavigationLayout_backup extends LinearLayout implements NestedScrollingParent , NestedScrollingChild{
 
     private static final String TAG = "StickyNavLayout";
 
@@ -132,11 +132,8 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
     private int[] mParentScrollConsumed = new int[2];
     private boolean mNestedScrollInProgress;
     private int[] mParentOffsetInWindow = new int[2];
-    private int[] mScrollConsumed = new int[2];
-    private int[] mNestedOffsets = new int[2];
-    private int[] mScrollOffset = new int[2];
 
-    public StickyNavigationLayout(Context context, AttributeSet attrs) {
+    public StickyNavigationLayout_backup(Context context, AttributeSet attrs) {
         super(context, attrs);
         //setOrientation(LinearLayout.VERTICAL);
         mGroupStickyDelegate = new GroupStickyDelegate();
@@ -291,8 +288,48 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
+       /* if (!mEnableStickyTouch) {
+            return super.onInterceptTouchEvent(ev);
+        }
+        if (mVelocityTracker == null) {
+            mVelocityTracker = VelocityTracker.obtain();
+        }
+        mVelocityTracker.addMovement(ev);*/
+
+         //1, 上拉的时候，停靠后分发给child滑动. max = mTopViewHeight
+         //2, 下拉时，先拉上面的，拉完后分发给child.
+
+      /*  int action = ev.getAction();
+        int y = (int) (ev.getY() + 0.5f);
+        int x = (int) (ev.getY() + 0.5f);
+
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                mDownY = mLastY = y;
+                mDownX = mLastX = x;
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+                int dy = y - mLastY;
+
+                if (Math.abs(dy) > mTouchSlop) {
+                    if (mNeedIntercept) {
+                        return true;
+                    }
+                    if (dy > 0) {
+                        return getScrollY() == mTopViewHeight;
+                    }
+                    if (mGroupStickyDelegate.shouldIntercept(this, dy,
+                            mTopHide ? VIEW_STATE_HIDE : VIEW_STATE_SHOW)) {
+                        mDragging = true;
+                        return true;
+                    }
+                }
+                break;
+        }*/
         return super.onInterceptTouchEvent(ev);
     }
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -308,11 +345,6 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
         int y = (int) (event.getY() + 0.5f);
         int x = (int) (event.getY() + 0.5f);
 
-        if (action == MotionEvent.ACTION_DOWN) {
-            mNestedOffsets[0] = mNestedOffsets[1] = 0;
-        }
-        event.offsetLocation(mNestedOffsets[0], mNestedOffsets[1]);
-
         switch (action) {
 
             case MotionEvent.ACTION_DOWN:
@@ -321,33 +353,56 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
                // mVelocityTracker.addMovement(event);
                 mDownY = mLastY = y;
                 mDownX = mLastX = x;
-                startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL);
                 return true;
 
             case MotionEvent.ACTION_MOVE:
-                //遵循Google规范(比如recyclerView源代码)。避免处理嵌套滑动出问题。
-                int dx = mLastX - x;
-                int dy = mLastY - y;
+                int dy = y - mLastY;
+                int dx = x - mLastX;
 
-                if(dispatchNestedPreScroll(dx, dy, mScrollConsumed, mScrollOffset)){
-                    dx -= mScrollConsumed[0];
-                    dy -= mScrollConsumed[1];
-                    event.offsetLocation(mScrollOffset[0], mScrollOffset[1]);
-                    // Updated the nested offsets
-                    mNestedOffsets[0] += mScrollOffset[0];
-                    mNestedOffsets[1] += mScrollOffset[1];
-                }
-
-                if (!mDragging && Math.abs(dy) > mTouchSlop && Math.abs(dy) > Math.abs(dx)) {
+                if (!mDragging && Math.abs(dy) > mTouchSlop) {
                     mDragging = true;
                 }
                 if (mDragging) {
-                    mFocusDir = dy < 0 ? View.FOCUS_DOWN : View.FOCUS_UP;
-                    mLastX = x - mScrollOffset[0];
-                    mLastY = y - mScrollOffset[1];
                     //手向下滑动， dy >0 否则 <0.
                     final int scrollY = getScrollY();
+                    final int totalDy = mTotalDy = y - mDownY;
+                    //Logger.i(TAG, "onTouchEvent", "ScrollY = " + scrollY + " ,dy = " + dy + " , mTopViewHeight = " + mTopViewHeight);
+                    mLastY = y;
+                    mLastX = x;
 
+                    mFocusDir = dy < 0 ? View.FOCUS_DOWN : View.FOCUS_UP;
+                    setScrollState(SCROLL_STATE_START);
+
+                    onPreScrollDistanceChange(0, dy, 0, totalDy);
+                    if (dy < 0) {
+                        //手势向上滑动 ,view down
+                        /**
+                         *  called [ onTouchEvent() ]: ScrollY = 666 ,dy = -7.4692383 , mTopViewHeight = 788
+                         *  called [ onTouchEvent() ]: ScrollY = 673 ,dy = -3.748291 , mTopViewHeight = 788
+                         */
+                        if (scrollY == mTopViewHeight) {
+                            //分发给child
+                                mGroupStickyDelegate.dispatchTouchEventToChild(this,dx ,dy, MotionEvent.obtain(event));
+                        } else if (scrollY - dy > mTopViewHeight) {
+                            //top height is the max scroll height
+                            scrollTo(getScrollX(), mTopViewHeight);
+                        } else {
+                            scrollBy(0, -dy);
+                        }
+                    } else {
+                        //手势向下
+                        if (scrollY == 0) {
+                            //分发事件给child
+                           // mGroupStickyDelegate.scrollBy(this, dy);
+                            mGroupStickyDelegate.dispatchTouchEventToChild(this,dx ,dy, MotionEvent.obtain(event));
+                        } else {
+                            if (scrollY - dy < 0) {
+                                dy = scrollY;
+                            }
+                            scrollBy(0, -dy);
+                        }
+                    }
+                    onAfterScrollDistanceChange(0, dy, 0, totalDy);
                 }
                 break;
 
@@ -405,7 +460,7 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
                 mGroupStickyDelegate.onTouchEventUp(this, event);
                 break;
         }
-        return mDragging;
+        return super.onTouchEvent(event);
     }
 
     /**
@@ -653,8 +708,8 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
             out.writeInt(mContentId);
         }
 
-        public static final Parcelable.Creator<SaveState> CREATOR
-                = new Parcelable.Creator<SaveState>() {
+        public static final Creator<SaveState> CREATOR
+                = new Creator<SaveState>() {
             @Override
             public SaveState createFromParcel(Parcel in) {
                 return new SaveState(in);
@@ -684,7 +739,7 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
             mDelegates.clear();
         }
         @Override
-        public boolean shouldIntercept(StickyNavigationLayout snv, int dy, int topViewState) {
+        public boolean shouldIntercept(StickyNavigationLayout_backup snv, int dy, int topViewState) {
             for(IStickyDelegate delegate : mDelegates){
                 if(delegate.shouldIntercept(snv, dy, topViewState)){
                     return true;
@@ -693,21 +748,21 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
             return false;
         }
         @Override
-        public void afterOnMeasure(StickyNavigationLayout snv, View top, View indicator, View contentView) {
+        public void afterOnMeasure(StickyNavigationLayout_backup snv, View top, View indicator, View contentView) {
             for(IStickyDelegate delegate : mDelegates){
                 delegate.afterOnMeasure(snv,top, indicator, contentView);
             }
         }
 
         @Override
-        public void dispatchTouchEventToChild(StickyNavigationLayout snv, int dx, int dy, MotionEvent event) {
+        public void dispatchTouchEventToChild(StickyNavigationLayout_backup snv, int dx, int dy, MotionEvent event) {
             for(IStickyDelegate delegate : mDelegates){
                 delegate.dispatchTouchEventToChild(snv, dx, dy ,event);
             }
         }
 
         @Override
-        public void onTouchEventUp(StickyNavigationLayout snv, MotionEvent event) {
+        public void onTouchEventUp(StickyNavigationLayout_backup snv, MotionEvent event) {
             for(IStickyDelegate delegate : mDelegates){
                 delegate.onTouchEventUp(snv ,event);
             }
@@ -721,33 +776,33 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
         /**
          * called when ths scroll distance change. may be negative .
          *
-         * @param snl     the {@link StickyNavigationLayout}
+         * @param snl     the {@link StickyNavigationLayout_backup}
          * @param dx      the delta x between this touch and last touch
          * @param dy      the delta y between this touch and last touch
          * @param totalDx the delta x between this touch and first touch
          * @param totalDy the delta y between this touch and first touch
          */
-        void onPreScrollDistanceChange(StickyNavigationLayout snl, int dx, int dy, int totalDx, int totalDy);
+        void onPreScrollDistanceChange(StickyNavigationLayout_backup snl, int dx, int dy, int totalDx, int totalDy);
 
         /**
          * called when ths scroll distance change. may be negative .
          *
-         * @param snl     the {@link StickyNavigationLayout}
+         * @param snl     the {@link StickyNavigationLayout_backup}
          * @param dx      the delta x between this touch and last touch
          * @param dy      the delta y between this touch and last touch
          * @param totalDx the delta x between this touch and first touch
          * @param totalDy the delta y between this touch and first touch
          */
-        void onAfterScrollDistanceChange(StickyNavigationLayout snl, int dx, int dy, int totalDx, int totalDy);
+        void onAfterScrollDistanceChange(StickyNavigationLayout_backup snl, int dx, int dy, int totalDx, int totalDy);
 
         /**
          * called when the scroll state change
          *
-         * @param snl            the {@link StickyNavigationLayout}
-         * @param state          the scroll state . see {@link StickyNavigationLayout#SCROLL_STATE_START} and etc.
+         * @param snl            the {@link StickyNavigationLayout_backup}
+         * @param state          the scroll state . see {@link StickyNavigationLayout_backup#SCROLL_STATE_START} and etc.
          * @param focusDirection {@link View#FOCUS_UP} means finger down or {@link View#FOCUS_DOWN} means finger up.
          */
-        void onScrollStateChange(StickyNavigationLayout snl, int state, int focusDirection);
+        void onScrollStateChange(StickyNavigationLayout_backup snl, int state, int focusDirection);
     }
 
     /**
@@ -757,34 +812,34 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
         /**
          * called when you should intercept child's touch event.
          *
-         * @param snv          the {@link StickyNavigationLayout}
+         * @param snv          the {@link StickyNavigationLayout_backup}
          * @param dy           the delta y distance
          * @param topViewState the view state of top view. {@link #VIEW_STATE_SHOW} or {@link #VIEW_STATE_HIDE}
          * @return true to intercept
          */
-        boolean shouldIntercept(StickyNavigationLayout snv, int dy, int topViewState);
+        boolean shouldIntercept(StickyNavigationLayout_backup snv, int dy, int topViewState);
 
         /**
-         *  called after the {@link StickyNavigationLayout#onMeasure(int, int)}. this is useful used when we want to
-         *  toggle two views visibility in {@link StickyNavigationLayout}(or else may cause bug). see it in demo.
-         * @param snv the {@link StickyNavigationLayout}
+         *  called after the {@link StickyNavigationLayout_backup#onMeasure(int, int)}. this is useful used when we want to
+         *  toggle two views visibility in {@link StickyNavigationLayout_backup}(or else may cause bug). see it in demo.
+         * @param snv the {@link StickyNavigationLayout_backup}
          * @param top the top view
          * @param indicator the indicator view
          * @param contentView the content view
          *
          */
-        void afterOnMeasure(StickyNavigationLayout snv, View top, View indicator, View contentView);
+        void afterOnMeasure(StickyNavigationLayout_backup snv, View top, View indicator, View contentView);
 
         /**
          * dispatch the touch event
-         * @param snv the {@link StickyNavigationLayout}
+         * @param snv the {@link StickyNavigationLayout_backup}
          * @param dx the delta x
          * @param dy the delta y
          * @param event the event.
          */
-        void dispatchTouchEventToChild(StickyNavigationLayout snv, int dx, int dy , MotionEvent event);
+        void dispatchTouchEventToChild(StickyNavigationLayout_backup snv, int dx, int dy, MotionEvent event);
 
-        void onTouchEventUp(StickyNavigationLayout snv, MotionEvent event);
+        void onTouchEventUp(StickyNavigationLayout_backup snv, MotionEvent event);
     }
 
     /**
@@ -792,21 +847,21 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
      */
     public static class SimpleStickyDelegate implements IStickyDelegate{
         @Override
-        public boolean shouldIntercept(StickyNavigationLayout snv, int dy, int topViewState) {
+        public boolean shouldIntercept(StickyNavigationLayout_backup snv, int dy, int topViewState) {
             return false;
         }
         @Override
-        public void afterOnMeasure(StickyNavigationLayout snv, View top, View indicator, View contentView) {
+        public void afterOnMeasure(StickyNavigationLayout_backup snv, View top, View indicator, View contentView) {
 
         }
 
         @Override
-        public void dispatchTouchEventToChild(StickyNavigationLayout snv, int dx, int dy, MotionEvent event) {
+        public void dispatchTouchEventToChild(StickyNavigationLayout_backup snv, int dx, int dy, MotionEvent event) {
 
         }
 
         @Override
-        public void onTouchEventUp(StickyNavigationLayout snv, MotionEvent event) {
+        public void onTouchEventUp(StickyNavigationLayout_backup snv, MotionEvent event) {
 
         }
     }
@@ -821,14 +876,14 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
         }
 
         @Override
-        public boolean shouldIntercept(StickyNavigationLayout snv, int dy, int topViewState) {
+        public boolean shouldIntercept(StickyNavigationLayout_backup snv, int dy, int topViewState) {
             final RecyclerView view = mWeakRecyclerView.get();
             if (view == null)
                 return false;
             final int position = findFirstVisibleItemPosition(view);
             if(position == -1) return false;
             final View child = view.getChildAt(position);
-            boolean isTopHidden = topViewState == StickyNavigationLayout.VIEW_STATE_HIDE;
+            boolean isTopHidden = topViewState == StickyNavigationLayout_backup.VIEW_STATE_HIDE;
             if (!isTopHidden || (child != null && child.getTop() == 0 && dy > 0)) {
                 //滑动到顶部，并且要继续向下滑动时，拦截触摸
                 return true;
@@ -836,12 +891,12 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
             return false;
         }
         @Override
-        public void afterOnMeasure(StickyNavigationLayout snv, View top, View indicator, View contentView) {
+        public void afterOnMeasure(StickyNavigationLayout_backup snv, View top, View indicator, View contentView) {
 
         }
 
         @Override
-        public void dispatchTouchEventToChild(StickyNavigationLayout snv, int dx, int dy, MotionEvent event) {
+        public void dispatchTouchEventToChild(StickyNavigationLayout_backup snv, int dx, int dy, MotionEvent event) {
             final RecyclerView view = mWeakRecyclerView.get();
             if (view != null) {
                /* final int position = findFirstVisibleItemPosition(view);
@@ -866,7 +921,7 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
         }
 
         @Override
-        public void onTouchEventUp(StickyNavigationLayout snv, MotionEvent event) {
+        public void onTouchEventUp(StickyNavigationLayout_backup snv, MotionEvent event) {
             /*if( mParentReceived ) {
                 mParentReceived = false;
                 final RecyclerView view = mWeakRecyclerView.get();

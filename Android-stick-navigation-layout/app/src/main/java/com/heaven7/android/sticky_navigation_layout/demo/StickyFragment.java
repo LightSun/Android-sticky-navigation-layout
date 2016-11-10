@@ -187,13 +187,6 @@ public class StickyFragment extends BaseFragment {
             return stickyDelegate !=null && stickyDelegate.shouldIntercept(snv, dy, topViewState);
         }
         @Override
-        public void scrollBy(StickyNavigationLayout snv, int dy) {
-            final StickyNavigationLayout.IStickyDelegate stickyDelegate = getChildStickyDelegate();
-             if(stickyDelegate != null){
-                 stickyDelegate.scrollBy(snv , dy);
-             }
-        }
-        @Override
         public void afterOnMeasure(StickyNavigationLayout snv, View top,View indicator, View contentView) {
             final ViewGroup.LayoutParams lp = mVg_subscribe.getLayoutParams();
             lp.height = snv.getMeasuredHeight() - snv.getScrollY();
@@ -201,10 +194,18 @@ public class StickyFragment extends BaseFragment {
             Logger.i(TAG, "afterOnMeasure" , "mVg_subscribe: height = " + lp.height +" ,snv.scrollY = " + snv.getScrollY());
         }
         @Override
-        public void dispatchTouchEventToChild(StickyNavigationLayout snv, MotionEvent event) {
+        public void dispatchTouchEventToChild(StickyNavigationLayout snv, int dx , int dy,  MotionEvent event) {
             final StickyNavigationLayout.IStickyDelegate stickyDelegate = getChildStickyDelegate();
             if(stickyDelegate != null){
-                stickyDelegate.dispatchTouchEventToChild(snv , event);
+                stickyDelegate.dispatchTouchEventToChild(snv, dx, dy ,event);
+            }
+        }
+
+        @Override
+        public void onTouchEventUp(StickyNavigationLayout snv, MotionEvent event) {
+            final StickyNavigationLayout.IStickyDelegate stickyDelegate = getChildStickyDelegate();
+            if(stickyDelegate != null){
+                stickyDelegate.onTouchEventUp(snv, event);
             }
         }
     };
