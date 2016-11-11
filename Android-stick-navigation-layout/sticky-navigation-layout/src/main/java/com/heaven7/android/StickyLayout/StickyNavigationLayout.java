@@ -15,6 +15,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -48,17 +49,23 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
     private static final long ANIMATED_SCROLL_GAP = 250;
 
     /**
-     * indicate the scroll state is just end
+     * The view is not currently scrolling.
+     * @see #getScrollState()
      */
-    public static final int SCROLL_STATE_IDLE = 1;
+    public static final int SCROLL_STATE_IDLE = 0;
+
     /**
-     * indicate the scroll state is just begin.
+     * The view is currently being dragged by outside input such as user touch input.
+     * @see #getScrollState()
      */
-    public static final int SCROLL_STATE_START = 2;
+    public static final int SCROLL_STATE_DRAGGING = 1;
+
     /**
-     * indicate the scroll state is setting/scrolling.
+     * The view is currently animating to a final position while not under
+     * outside control.
+     * @see #getScrollState()
      */
-    public static final int SCROLL_STATE_SETTING = 3;
+    public static final int SCROLL_STATE_SETTLING = 2;
 
     /**
      * the view state is shown.
@@ -94,8 +101,8 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
     private int mTouchSlop;
     private int mMaximumVelocity, mMinimumVelocity;
 
-    private int mLastY, mLastX;
-    private int mDownY, mDownX;
+    private int mLastTouchY, mLastTouchX;
+    private int mInitialTouchY, mInitialTouchX;
     private boolean mDragging;
 
     private OnScrollChangeListener mScrollListener;
@@ -212,6 +219,15 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
     }
 
     /**
+     * Return the current scrolling state of the RecyclerView.
+     *
+     * @return {@link #SCROLL_STATE_IDLE}, {@link #SCROLL_STATE_DRAGGING} or
+     * {@link #SCROLL_STATE_SETTLING}
+     */
+    public int getScrollState() {
+        return mScrollState;
+    }
+    /**
      * set if enable the sticky touch
      * @param enable true to enable, false to disable.
      */
@@ -319,15 +335,15 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
                 if (!mScroller.isFinished())
                     mScroller.abortAnimation();
                // mVelocityTracker.addMovement(event);
-                mDownY = mLastY = y;
-                mDownX = mLastX = x;
+                mInitialTouchX = mLastTouchX = x;
+                mInitialTouchY = mLastTouchY = y;
                 startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL);
                 return true;
 
             case MotionEvent.ACTION_MOVE:
                 //遵循Google规范(比如recyclerView源代码)。避免处理嵌套滑动出问题。
-                int dx = mLastX - x;
-                int dy = mLastY - y;
+                int dx = mLastTouchX - x;
+                int dy = mLastTouchY - y;
 
                 if(dispatchNestedPreScroll(dx, dy, mScrollConsumed, mScrollOffset)){
                     dx -= mScrollConsumed[0];
@@ -338,74 +354,119 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
                     mNestedOffsets[1] += mScrollOffset[1];
                 }
 
-                if (!mDragging && Math.abs(dy) > mTouchSlop && Math.abs(dy) > Math.abs(dx)) {
+                if (!mDragging && Math.abs(dy) > mTouchSlop /*&& Math.abs(dy) > Math.abs(dx)*/ ) {
                     mDragging = true;
                 }
                 if (mDragging) {
                     mFocusDir = dy < 0 ? View.FOCUS_DOWN : View.FOCUS_UP;
-                    mLastX = x - mScrollOffset[0];
-                    mLastY = y - mScrollOffset[1];
+                    mLastTouchX = x - mScrollOffset[0];
+                    mLastTouchY = y - mScrollOffset[1];
                     //手向下滑动， dy >0 否则 <0.
-                    final int scrollY = getScrollY();
-
+                    if(scrollByInternal(0, dy, event)){
+                        getParent().requestDisallowInterceptTouchEvent(true);
+                    }
                 }
                 break;
 
             case MotionEvent.ACTION_CANCEL:
-                mDragging = false;
-                if (!mScroller.isFinished()) {//如果手离开了,就终止滑动
-                    mScroller.abortAnimation();
-                }
-                setScrollState(SCROLL_STATE_IDLE);
-                mFocusDir = 0;
+                cancelTouch();
                 break;
 
             case MotionEvent.ACTION_UP:
 
-                if (Math.abs(y - mLastY) > mTouchSlop) {
-                    mVelocityTracker.computeCurrentVelocity(1000, mMaximumVelocity); //1000表示像素/秒
-                    int velocityY = (int) mVelocityTracker.getYVelocity();
-                    if (Math.abs(velocityY) > mMinimumVelocity) {
-                        if (DEBUG) {
-                            Logger.i(TAG, "onTouchEvent", "begin fling: velocityY = " + velocityY);
-                        }
-                        //fling(-velocityY);
-                        smoothScrollTo(0, mTotalDy < 0 ? mTopViewHeight : 0);
-                    }
-                } else {
-                    //check auto fit scroll
-                    if (mAutoFitScroll) {
-                        //check whole gesture.
-                        if (mTotalDy < 0) {
-                            //finger up
-                            //if larger the 1/2 * maxHeight go to maxHeight
-                            if (Math.abs(mTotalDy) >= mTopViewHeight * mAutoFitPercent) {
-                                smoothScrollTo(0, mTopViewHeight);
-                            } else {
-                                smoothScrollTo(0, 0);
-                            }
-                        } else {
-                            //finger down
-                            if (Math.abs(mTotalDy) >= mTopViewHeight * mAutoFitPercent) {
-                                smoothScrollTo(0, 0);
-                            } else {
-                                smoothScrollTo(0, mTopViewHeight);
-                            }
-                        }
-                    }
+                mVelocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
+                final float yvel = (int) mVelocityTracker.getYVelocity();
+                final float xvel = (int) mVelocityTracker.getXVelocity();
+               // final float xvel = -VelocityTrackerCompat.getXVelocity(mVelocityTracker, mScrollPointerId) : 0;
+                if (!((xvel != 0 || yvel != 0) && fling((int) xvel, (int) yvel))) {
+                    setScrollState(SCROLL_STATE_IDLE);
                 }
-
-                if (mVelocityTracker != null) {
-                    mVelocityTracker.recycle();
-                    mVelocityTracker = null;
-                }
-                mDragging = false;
-                setScrollState(SCROLL_STATE_IDLE);
-                mFocusDir = 0;
-                mGroupStickyDelegate.onTouchEventUp(this, event);
+                resetTouch();
                 break;
         }
         return mDragging;
+    }
+
+    private void cancelTouch() {
+      /*  if (!mScroller.isFinished()) {   //如果手离开了,就终止滑动
+            mScroller.abortAnimation();
+        }*/
+        resetTouch();
+        setScrollState(SCROLL_STATE_IDLE);
+    }
+
+    private void resetTouch() {
+        mDragging = false;
+        if (mVelocityTracker != null) {
+            mVelocityTracker.clear();
+        }
+        stopNestedScroll();
+       // releaseGlows();
+    }
+    /**
+     * Begin a standard fling with an initial velocity along each axis in pixels per second.
+     * If the velocity given is below the system-defined minimum this method will return false
+     * and no fling will occur.
+     *
+     * @param velocityX Initial horizontal velocity in pixels per second
+     * @param velocityY Initial vertical velocity in pixels per second
+     * @return true if the fling was started, false if the velocity was too low to fling or
+     * LayoutManager does not support scrolling in the axis fling is issued.
+     *
+     */
+    public boolean fling(int velocityX, int velocityY) {
+        //TODO
+        return false;
+    }
+    void setScrollState(int state) {
+        if (state == mScrollState) {
+            return;
+        }
+        if (DEBUG) {
+            Log.d(TAG, "setting scroll state to " + state + " from " + mScrollState,
+                    new Exception());
+        }
+        mScrollState = state;
+        if (state != SCROLL_STATE_SETTLING) {
+           // stopScrollersInternal();
+        }
+       //TODO dispatchOnScrollStateChanged(state);
+    }
+    /**
+     * Does not perform bounds checking. Used by internal methods that have already validated input.
+     * <p>
+     * It also reports any unused scroll request to the related EdgeEffect.
+     *
+     * @param dx The amount of horizontal scroll request
+     * @param dy The amount of vertical scroll request
+     * @param ev The originating MotionEvent, or null if not from a touch event.
+     *
+     * @return Whether any scroll was consumed in either direction.
+     */
+    boolean scrollByInternal(int dx, int dy, MotionEvent ev) {
+        //TODO
+        mScrollConsumed[0] = 0;
+        mScrollConsumed[1] = 0;
+        scrollInternal(dx, dy, mScrollConsumed);
+
+        int unconsumedX = dx - mScrollConsumed[0];
+        int unconsumedY = dy - mScrollConsumed[1];
+
+        if (dispatchNestedScroll(mScrollConsumed[0], mScrollConsumed[1], unconsumedX, unconsumedY, mScrollOffset)) {
+            // Update the last touch co-ords, taking any scroll offset into account
+            mLastTouchX -= mScrollOffset[0];
+            mLastTouchY -= mScrollOffset[1];
+            if (ev != null) {
+                ev.offsetLocation(mScrollOffset[0], mScrollOffset[1]);
+            }
+            mNestedOffsets[0] += mScrollOffset[0];
+            mNestedOffsets[1] += mScrollOffset[1];
+        }
+        //TODO dispatch on scroll ?
+        if (!awakenScrollBars()) {
+            invalidate();
+        }
+        return mScrollConsumed[0] != 0 || mScrollConsumed[1] != 0;
     }
 
     /**
@@ -488,61 +549,17 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
         }
     }
 
-    /**
-     * called when the scroll state change
-     *
-     * @param expectScrollState the expect state.
-     */
-    private void setScrollState(int expectScrollState) {
-        expectScrollState = adjustState(expectScrollState);
-        if (mScrollState == expectScrollState) {
-            //ignore
-            return;
-        }
-        if (DEBUG) {
-            Logger.i(TAG, "setScrollState", "new state = " + getStateString(expectScrollState));
-        }
-        mScrollState = expectScrollState;
-
-        if (mScrollListener != null) {
-            mScrollListener.onScrollStateChange(this, expectScrollState, mFocusDir);
-        } else {
-            if (getContext() instanceof OnScrollChangeListener) {
-                ((OnScrollChangeListener) getContext()).onScrollStateChange(this, expectScrollState, mFocusDir);
-            }
-        }
-    }
-
     private static String getStateString(int state) {
         switch (state) {
-            case SCROLL_STATE_START:
-                return "SCROLL_STATE_START";
+            case SCROLL_STATE_DRAGGING:
+                return "SCROLL_STATE_DRAGGING";
 
-            case SCROLL_STATE_SETTING:
-                return "SCROLL_STATE_SETTING";
+            case SCROLL_STATE_SETTLING:
+                return "SCROLL_STATE_SETTLING";
 
             case SCROLL_STATE_IDLE:
             default:
                 return "SCROLL_STATE_IDLE";
-        }
-    }
-
-    private int adjustState(int expectScrollState) {
-        switch (expectScrollState) {
-            case SCROLL_STATE_START: {
-                if (mScrollState == SCROLL_STATE_START) {
-                    return SCROLL_STATE_SETTING;
-                } else if (mScrollState == SCROLL_STATE_IDLE) {
-                    return expectScrollState;
-                } else {
-                    return SCROLL_STATE_SETTING;
-                }
-            }
-
-            case SCROLL_STATE_SETTING:
-            case SCROLL_STATE_IDLE:
-            default:
-                return expectScrollState;
         }
     }
 
@@ -744,7 +761,7 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
          * called when the scroll state change
          *
          * @param snl            the {@link StickyNavigationLayout}
-         * @param state          the scroll state . see {@link StickyNavigationLayout#SCROLL_STATE_START} and etc.
+         * @param state          the scroll state . see {@link StickyNavigationLayout#SCROLL_STATE_IDLE} and etc.
          * @param focusDirection {@link View#FOCUS_UP} means finger down or {@link View#FOCUS_DOWN} means finger up.
          */
         void onScrollStateChange(StickyNavigationLayout snl, int state, int focusDirection);
@@ -935,25 +952,7 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
         /**
          * 滑动的最大高度:
          */
-        final int scrollY = getScrollY();
-        int by = 0;
-        if(dy > 0){
-            //手势向下，view向上
-            if(scrollY != 0){
-                consumed[1] =  Math.min(dy, scrollY);
-                by = - consumed[1];
-            }
-        }else{
-            //手势向上，view向下
-            if(scrollY < mTopViewHeight){
-                int maxH = mTopViewHeight - scrollY;
-                consumed[1] =  -Math.min(Math.abs(dy), maxH);
-                by = - consumed[1];
-            }else{
-                //ignore
-            }
-        }
-        scrollBy(0, by);
+        scrollInternal(dx, dy, consumed);
 
         // If we are in the middle of consuming, a scroll, then we want to move the spinner back up
         // before allowing the list to scroll
@@ -985,6 +984,40 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
             consumed[1] += parentConsumed[1];
         }
     }
+
+    /**
+     * do scroll internal.
+     * @param dx  the delta x, may be negative
+     * @param dy the delta y , may be negative
+     * @param consumed optional , in not null will contains the consumed x and y by this scroll.
+     * @return the consumed x and y as array by this scroll.
+     */
+    private int[] scrollInternal(int dx ,int dy, int[] consumed) {
+        final int scrollY = getScrollY(); // >0
+        if(consumed == null){
+            consumed = new int[2];
+        }
+        int by = 0;
+        if(dy > 0){
+            //手势向下，view向上
+            if(scrollY > 0){
+                consumed[1] =  Math.min(dy, scrollY);
+                by = - consumed[1];
+            }
+        }else{
+            //手势向上，view向下
+            if(scrollY < mTopViewHeight){
+                int maxH = mTopViewHeight - scrollY;
+                consumed[1] =  -Math.min(Math.abs(dy), maxH);
+                by = - consumed[1];
+            }else{
+                //ignore
+            }
+        }
+        scrollBy(0, by);
+        return consumed;
+    }
+
     @Override
     public void onNestedScroll(View target, int dxConsumed, int dyConsumed,
                                int dxUnconsumed, int dyUnconsumed){
