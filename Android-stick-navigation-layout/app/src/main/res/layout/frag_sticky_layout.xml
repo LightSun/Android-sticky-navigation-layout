@@ -8,18 +8,19 @@
     app:stickyLayout_content_id="@+id/vp"
     app:stickyLayout_indicator_id="@+id/vp_indicator"
     app:stickyLayout_top_id="@+id/top_view"
-    app:stickyLayout_auto_fit_scroll="false"
+    app:stickyLayout_auto_fit_scroll="true"
     >
 
     <RelativeLayout
         android:id="@+id/top_view"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:background="#8800ff00">
 
         <TextView
+            android:id="@+id/tv_title"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="100dp"
             android:layout_centerVertical="true"
             android:gravity="center"
             android:text="标题党--嘎嘎"
@@ -31,6 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:scrollbars="none"
+            android:layout_above="@+id/tv_title"
             >
         </android.support.v7.widget.RecyclerView>
 

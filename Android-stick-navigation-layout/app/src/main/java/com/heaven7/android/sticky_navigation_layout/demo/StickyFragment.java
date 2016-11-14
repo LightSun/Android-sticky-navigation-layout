@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -182,31 +181,11 @@ public class StickyFragment extends BaseFragment {
 
     private final StickyNavigationLayout.IStickyDelegate mStickyDelegate = new StickyNavigationLayout.IStickyDelegate() {
         @Override
-        public boolean shouldIntercept(StickyNavigationLayout snv, int dy, int topViewState) {
-            final StickyNavigationLayout.IStickyDelegate stickyDelegate = getChildStickyDelegate();
-            return stickyDelegate !=null && stickyDelegate.shouldIntercept(snv, dy, topViewState);
-        }
-        @Override
-        public void afterOnMeasure(StickyNavigationLayout snv, View top,View indicator, View contentView) {
+        public void afterOnMeasure(StickyNavigationLayout snv, View top, View indicator, View contentView) {
             final ViewGroup.LayoutParams lp = mVg_subscribe.getLayoutParams();
             lp.height = snv.getMeasuredHeight() - snv.getScrollY();
             mVg_subscribe.setLayoutParams(lp);
             Logger.i(TAG, "afterOnMeasure" , "mVg_subscribe: height = " + lp.height +" ,snv.scrollY = " + snv.getScrollY());
-        }
-        @Override
-        public void dispatchTouchEventToChild(StickyNavigationLayout snv, int dx , int dy,  MotionEvent event) {
-            final StickyNavigationLayout.IStickyDelegate stickyDelegate = getChildStickyDelegate();
-            if(stickyDelegate != null){
-                stickyDelegate.dispatchTouchEventToChild(snv, dx, dy ,event);
-            }
-        }
-
-        @Override
-        public void onTouchEventUp(StickyNavigationLayout snv, MotionEvent event) {
-            final StickyNavigationLayout.IStickyDelegate stickyDelegate = getChildStickyDelegate();
-            if(stickyDelegate != null){
-                stickyDelegate.onTouchEventUp(snv, event);
-            }
         }
     };
 }

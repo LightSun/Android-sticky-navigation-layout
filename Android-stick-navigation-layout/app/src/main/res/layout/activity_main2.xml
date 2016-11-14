@@ -60,8 +60,6 @@
             android:layout_marginBottom="60dp"
             >
         </FrameLayout>
-
-
     </FrameLayout>
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_label"

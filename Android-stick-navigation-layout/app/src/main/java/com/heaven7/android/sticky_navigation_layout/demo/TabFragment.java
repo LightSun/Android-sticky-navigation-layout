@@ -14,13 +14,12 @@ import android.view.ViewGroup;
 
 import com.heaven7.adapter.BaseSelector;
 import com.heaven7.adapter.QuickRecycleViewAdapter;
-import com.heaven7.android.StickyLayout.StickyNavigationLayout;
 import com.heaven7.core.util.ViewHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TabFragment extends Fragment implements  StickyDelegateSupplier{
+public class TabFragment extends Fragment{
 
     public static final String TITLE = "title";
 
@@ -30,8 +29,6 @@ public class TabFragment extends Fragment implements  StickyDelegateSupplier{
 
     private SwipeRefreshLayout swipeView ;
     private QuickRecycleViewAdapter<Data> mAdapter;
-
-    private StickyNavigationLayout.RecyclerViewStickyDelegate mDelegate;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,7 +44,7 @@ public class TabFragment extends Fragment implements  StickyDelegateSupplier{
         View view = inflater.inflate(R.layout.fragment_tab, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rv);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(container.getContext()));
-        mDelegate = new StickyNavigationLayout.RecyclerViewStickyDelegate(mRecyclerView);
+       // mDelegate = new StickyNavigationLayout.RecyclerViewStickyDelegate(mRecyclerView);
 
         swipeView = (SwipeRefreshLayout) view.findViewById(R.id.swipe);
         swipeView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -91,12 +88,6 @@ public class TabFragment extends Fragment implements  StickyDelegateSupplier{
         tabFragment.setArguments(bundle);
         return tabFragment;
     }
-
-    @Override
-    public StickyNavigationLayout.IStickyDelegate getStickyDelegate() {
-        return mDelegate;
-    }
-
 
     public static class Data extends BaseSelector {
         String title;
