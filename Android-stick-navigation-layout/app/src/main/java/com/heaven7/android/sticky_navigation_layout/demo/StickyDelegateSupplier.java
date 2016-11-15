@@ -7,5 +7,5 @@ import com.heaven7.android.StickyLayout.StickyNavigationLayout;
  */
 public interface StickyDelegateSupplier {
 
-    StickyNavigationLayout.IStickyDelegate getStickyDelegate();
+    StickyNavigationLayout.IStickyCallback getStickyDelegate();
 }

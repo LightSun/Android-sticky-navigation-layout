@@ -1,4 +1,4 @@
-package com.heaven7.android.sticky_navigation_layout.demo;
+package com.heaven7.android.sticky_navigation_layout.demo.fragment;
 
 import android.content.Context;
 import android.os.Bundle;

@@ -1,4 +1,4 @@
-package com.heaven7.android.sticky_navigation_layout.demo;
+package com.heaven7.android.sticky_navigation_layout.demo.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 
 import com.heaven7.adapter.BaseSelector;
 import com.heaven7.adapter.QuickRecycleViewAdapter;
+import com.heaven7.android.sticky_navigation_layout.demo.R;
 import com.heaven7.core.util.ViewHelper;
 
 import java.util.ArrayList;
@@ -90,7 +91,7 @@ public class TabFragment extends Fragment{
     }
 
     public static class Data extends BaseSelector {
-        String title;
+        public String title;
 
         public Data(String title) {
             this.title = title;

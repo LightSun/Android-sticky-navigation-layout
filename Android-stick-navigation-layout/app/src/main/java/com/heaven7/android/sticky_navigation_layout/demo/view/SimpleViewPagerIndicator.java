@@ -1,4 +1,4 @@
-package com.heaven7.android.sticky_navigation_layout.demo;
+package com.heaven7.android.sticky_navigation_layout.demo.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -7,7 +7,6 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -79,17 +78,14 @@ public class SimpleViewPagerIndicator extends LinearLayout {
 		setWeightSum(count);
 		for (int i = 0; i < count; i++) {
 			final TextView tv = new TextView(getContext());
+			final String title = mTitles[i];
 			LayoutParams lp = new LayoutParams(0, LayoutParams.MATCH_PARENT);
 			lp.weight = 1;
 			tv.setGravity(Gravity.CENTER);
 			tv.setTextColor(COLOR_TEXT_NORMAL);
-			tv.setText(mTitles[i]);
+			tv.setText(title);
 			tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
 			tv.setLayoutParams(lp);
-			tv.setOnClickListener(new OnClickListener() {
-				public void onClick(View v) {
-				}
-			});
 			addView(tv);
 		}
 	}

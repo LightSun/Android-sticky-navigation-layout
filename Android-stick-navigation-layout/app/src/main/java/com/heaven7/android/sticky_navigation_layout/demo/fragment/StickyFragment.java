@@ -1,4 +1,4 @@
-package com.heaven7.android.sticky_navigation_layout.demo;
+package com.heaven7.android.sticky_navigation_layout.demo.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -14,6 +14,9 @@ import android.widget.LinearLayout;
 
 import com.heaven7.adapter.QuickRecycleViewAdapter;
 import com.heaven7.android.StickyLayout.StickyNavigationLayout;
+import com.heaven7.android.sticky_navigation_layout.demo.R;
+import com.heaven7.android.sticky_navigation_layout.demo.StickyDelegateSupplier;
+import com.heaven7.android.sticky_navigation_layout.demo.view.SimpleViewPagerIndicator;
 import com.heaven7.core.util.Logger;
 import com.heaven7.core.util.ViewHelper;
 
@@ -78,11 +81,7 @@ public class StickyFragment extends BaseFragment {
                // Snackbar.make(v, R.string.action_settings, Snackbar.LENGTH_LONG).show();
             }
         });
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-            }
-
+        mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             /**
              * position : 中的position
              * positionOffset: 当前页面偏移的百分比
@@ -93,11 +92,6 @@ public class StickyFragment extends BaseFragment {
                                        int positionOffsetPixels) { // 会多次调用
                 mIndicator.scroll(position, positionOffset);
             }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
         });
     }
 
@@ -107,14 +101,14 @@ public class StickyFragment extends BaseFragment {
             mLl_indicator.setVisibility(View.GONE);
             mViewPager.setVisibility(View.GONE);
             mVg_subscribe.setVisibility(View.VISIBLE);
-            mStickyNavLayout.setEnableStickyTouch(false);
+          //  mStickyNavLayout.setEnableStickyTouch(false);
             Logger.i(TAG, "switchMode" , "to mode: MODE_SUBSCRIBE");
         }else{
             mMode = MODE_FEED;
             mVg_subscribe.setVisibility(View.GONE);
             mLl_indicator.setVisibility(View.VISIBLE);
             mViewPager.setVisibility(View.VISIBLE);
-            mStickyNavLayout.setEnableStickyTouch(true);
+           // mStickyNavLayout.setEnableStickyTouch(true);
             Logger.i(TAG, "switchMode" , "to mode: MODE_FEED");
         }
     }
@@ -170,7 +164,7 @@ public class StickyFragment extends BaseFragment {
         });
     }
 
-    private StickyNavigationLayout.IStickyDelegate getChildStickyDelegate() {
+    private StickyNavigationLayout.IStickyCallback getChildStickyDelegate() {
         final Fragment item = mAdapter.getItem(mViewPager.getCurrentItem());
         if(item instanceof StickyDelegateSupplier) {
            return ((StickyDelegateSupplier) item).getStickyDelegate();
@@ -179,7 +173,7 @@ public class StickyFragment extends BaseFragment {
         return null;
     }
 
-    private final StickyNavigationLayout.IStickyDelegate mStickyDelegate = new StickyNavigationLayout.IStickyDelegate() {
+    private final StickyNavigationLayout.IStickyCallback mStickyDelegate = new StickyNavigationLayout.IStickyCallback() {
         @Override
         public void afterOnMeasure(StickyNavigationLayout snv, View top, View indicator, View contentView) {
             final ViewGroup.LayoutParams lp = mVg_subscribe.getLayoutParams();

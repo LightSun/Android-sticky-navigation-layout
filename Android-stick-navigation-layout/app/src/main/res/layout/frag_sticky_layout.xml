@@ -70,7 +70,7 @@
         android:orientation="vertical"
         >
 
-        <com.heaven7.android.sticky_navigation_layout.demo.SimpleViewPagerIndicator
+        <com.heaven7.android.sticky_navigation_layout.demo.view.SimpleViewPagerIndicator
             android:id="@id/vp_indicator"
             android:layout_width="match_parent"
             android:layout_height="50dp"

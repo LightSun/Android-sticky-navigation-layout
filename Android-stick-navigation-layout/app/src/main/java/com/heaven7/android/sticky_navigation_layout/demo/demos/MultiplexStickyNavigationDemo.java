@@ -1,4 +1,4 @@
-package com.heaven7.android.sticky_navigation_layout.demo;
+package com.heaven7.android.sticky_navigation_layout.demo.demos;
 
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
@@ -7,13 +7,18 @@ import android.util.SparseArray;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
 
+import com.heaven7.android.sticky_navigation_layout.demo.R;
+import com.heaven7.android.sticky_navigation_layout.demo.fragment.BaseFragment;
+import com.heaven7.android.sticky_navigation_layout.demo.fragment.StickyFragment;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 /**
+ * this is a multiples demo of sticky .
  * Created by heaven7 on 2016/11/3.
  */
-public class MainActivity2 extends AppCompatActivity {
+public class MultiplexStickyNavigationDemo extends AppCompatActivity {
 
     private final SparseArray<BaseFragment> sCache = new SparseArray<>(6);
 
