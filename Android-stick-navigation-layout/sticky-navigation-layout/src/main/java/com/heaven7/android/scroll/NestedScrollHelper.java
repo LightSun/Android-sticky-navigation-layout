@@ -290,11 +290,11 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
 
         //here we dispatch scroll later.
         nestedScroll(dx, dy, mScrollConsumed , false);
-        int consumedX = mScrollConsumed[0];
-        int consumedY = mScrollConsumed[1];
+        final int consumedX = mScrollConsumed[0];
+        final int consumedY = mScrollConsumed[1];
 
-        int unconsumedX = dx - mScrollConsumed[0];
-        int unconsumedY = dy - mScrollConsumed[1];
+        final int unconsumedX = dx - consumedX;
+        final int unconsumedY = dy - consumedY;
 
         if (mNestedChild.dispatchNestedScroll(mScrollConsumed[0], mScrollConsumed[1], unconsumedX, unconsumedY, mScrollOffset)) {
             // Update the last touch co-ords, taking any scroll offset into account
@@ -317,6 +317,7 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
 
     @Override
     public int[] nestedScroll(int dx, int dy, int[] consumed, boolean dispatchScroll) {
+
         //gesture up dy >0 , gesture down dy < 0
         if (consumed == null) {
             consumed = new int[2];

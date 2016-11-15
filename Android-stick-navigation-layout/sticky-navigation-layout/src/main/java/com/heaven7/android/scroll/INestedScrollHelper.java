@@ -51,7 +51,6 @@ public interface INestedScrollHelper extends IScrollHelper{
 
     /**
      * do scroll internal. this method is often called in {@link #nestedScrollBy(int, int, MotionEvent)}.
-     * you should call {@link #dispatchOnScrolled(int, int)} when you call this directly.
      *
      * @param dx       the delta x, may be negative
      * @param dy       the delta y , may be negative
