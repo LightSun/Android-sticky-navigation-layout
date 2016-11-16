@@ -1,1 +1,1 @@
-include ':app', ':sticky-navigation-layout'
+include ':app', ':sticky-navigation-layout', ':android-nestedscroll'

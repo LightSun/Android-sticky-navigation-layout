@@ -74,7 +74,6 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
     private final NestedScrollingParentHelper mNestedScrollingParentHelper;
     private final NestedScrollingChildHelper mNestedScrollingChildHelper;
 
-    private boolean mNestedScrollInProgress;
     private int[] mParentScrollConsumed = new int[2];
     private final int[] mParentOffsetInWindow = new int[2];
 
@@ -356,9 +355,9 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
     public interface IStickyCallback {
 
         /**
-         *  called after the {@link StickyNavigationLayout_backup#onMeasure(int, int)}. this is useful used when we want to
-         *  toggle two views visibility in {@link StickyNavigationLayout_backup}(or else may cause bug). see it in demo.
-         * @param snv the {@link StickyNavigationLayout_backup}
+         *  called after the {@link StickyNavigationLayout#onMeasure(int, int)}. this is useful used when we want to
+         *  toggle two views visibility in {@link StickyNavigationLayout}(or else may cause bug). see it in demo.
+         * @param snv the {@link StickyNavigationLayout}
          * @param top the top view
          * @param indicator the indicator view
          * @param contentView the content view
@@ -379,7 +378,6 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
         mNestedScrollingParentHelper.onNestedScrollAccepted(child, target, nestedScrollAxes);
         // Dispatch up to the nested parent
         startNestedScroll(nestedScrollAxes & ViewCompat.SCROLL_AXIS_VERTICAL);
-        mNestedScrollInProgress = true;
     }
 
     @Override
@@ -408,7 +406,6 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
       //  Logger.i(TAG, "onStopNestedScroll");
         checkAutoFitScroll();
         mNestedScrollingParentHelper.onStopNestedScroll(target);
-        mNestedScrollInProgress = false;
 
         // Dispatch up our nested parent
         stopNestedScroll();

@@ -9,8 +9,6 @@ import android.view.VelocityTracker;
 import android.view.View;
 import android.widget.OverScroller;
 
-import com.heaven7.core.util.Logger;
-
 /**
  * nested scroll helper . it can communicate with {@link NestedScrollingChild}.
  * Created by heaven7 on 2016/11/15.
@@ -112,7 +110,7 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
                     final int dx = x - mInitialTouchX;
                     final int dy = y - mInitialTouchY;
                    /* if(DEBUG) {
-                        Logger.i(mTag, "onInterceptTouchEvent", String.format("ACTION_MOVE : (dx = %d ,dy = %d )", dx, dy));
+                        Log.i(mTag, "onInterceptTouchEvent: " + String.format("ACTION_MOVE : (dx = %d ,dy = %d )", dx, dy));
                     }*/
 
                     boolean startScroll = false;
@@ -213,12 +211,12 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
                 int dy = mLastTouchY - y;
 
               /*  if(DEBUG) {
-                    Logger.i(mTag, "onTouchEvent", String.format("before --- dispatchNestedPreScroll ----  (dx = %d ,dy = %d )", dx, dy));
+                    Log.i(mTag, "onTouchEvent: " + String.format("before --- dispatchNestedPreScroll ----  (dx = %d ,dy = %d )", dx, dy));
                 }*/
 
                 if (mNestedChild.dispatchNestedPreScroll(dx, dy, mScrollConsumed, mScrollOffset)) {
                     /*if(DEBUG) {
-                        Logger.i(mTag, "onTouchEvent_dispatchNestedPreScroll", "parent consumed: " + Arrays.toString(mScrollConsumed));
+                        Log.i(mTag, "onTouchEvent_dispatchNestedPreScroll: parent consumed: " + Arrays.toString(mScrollConsumed));
                     }*/
                     dx -= mScrollConsumed[0];
                     dy -= mScrollConsumed[1];
@@ -305,7 +303,7 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
         final int unconsumedY = dy - consumedY;
 
         if (DEBUG) {
-            Logger.i(mTag, "nestedScrollBy", "before dispatchNestedScroll--> consumedX = " + consumedX + " ,consumedY = " + consumedY +
+            Log.i(mTag, "nestedScrollBy: before dispatchNestedScroll--> consumedX = " + consumedX + " ,consumedY = " + consumedY +
                     " ,unconsumedX = " + unconsumedX + " ,unconsumedY = " + unconsumedY);
         }
         if (mNestedChild.dispatchNestedScroll(consumedX, consumedY, unconsumedX, unconsumedY, mScrollOffset)) {
@@ -353,7 +351,7 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
          I/NestedScrollFrameLayout: called [ nestedScrollBy() ]: before dispatchNestedScroll--> consumedX = 0 ,consumedY = 1 ,unconsumedX = 15 ,unconsumedY = 0
          */
         if (DEBUG) {
-            Logger.i(mTag, "nestedScroll", String.format("(scrollX = %d ,scrollY = %d, maxX = %d ,maxY = %d)",
+            Log.i(mTag, "nestedScroll: " + String.format("(scrollX = %d ,scrollY = %d, maxX = %d ,maxY = %d)",
                     scrollX, scrollY, maxX, maxY));
         }
 
@@ -402,8 +400,7 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
     @Override
     protected boolean onFling(boolean canScrollHorizontal, boolean canScrollVertical, float velocityX, float velocityY) {
         if (DEBUG) {
-            Logger.i(mTag, "onFling", "velocityX = " + velocityX + " ,velocityY = " + velocityY);
-            return false;
+            Log.i(mTag, "onFling:  "+"velocityX = " + velocityX + " ,velocityY = " + velocityY );
         }
         if (!mNestedChild.dispatchNestedPreFling(velocityX, velocityY)) {
             final boolean canScroll = canScrollHorizontal || canScrollVertical;
@@ -417,7 +414,7 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
                 velocityX = Math.max(-mMaxFlingVelocity, Math.min(velocityX, mMaxFlingVelocity));
                 velocityY = Math.max(-mMaxFlingVelocity, Math.min(velocityY, mMaxFlingVelocity));
                 if (DEBUG) {
-                    Logger.i(mTag, "onFling", "after adjust , velocityX = " + velocityX + " ,velocityY = " + velocityY);
+                    Log.i(mTag, "onFling: after adjust , velocityX = " + velocityX + " ,velocityY = " + velocityY);
                 }
                 //mScroller.fling(0, getScrollY(), velocityX, velocityY, 0, 0, 0, mTopViewHeight);
                 getScrollXY(mTempXY);

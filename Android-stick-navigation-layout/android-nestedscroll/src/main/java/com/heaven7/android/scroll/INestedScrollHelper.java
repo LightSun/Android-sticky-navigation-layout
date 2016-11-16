@@ -58,5 +58,5 @@ public interface INestedScrollHelper extends IScrollHelper{
      * @param dispatchScroll if scrolled , whether dispatch the scroll distance changed or not.
      * @return the consumed x and y as array by this scroll.
      */
-    int[] nestedScroll(int dx, int dy, int[] consumed , boolean dispatchScroll);
+    int[] nestedScroll(int dx, int dy, int[] consumed, boolean dispatchScroll);
 }

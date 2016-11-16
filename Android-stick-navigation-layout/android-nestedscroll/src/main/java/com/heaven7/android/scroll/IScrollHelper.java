@@ -39,8 +39,8 @@ public interface IScrollHelper {
 
     /**
      * get the scroll state, which is set by call {@link #setScrollState(int)}.
-     *  @return {@link com.heaven7.android.scroll.IScrollHelper#SCROLL_STATE_IDLE}, {@link com.heaven7.android.scroll.IScrollHelper#SCROLL_STATE_DRAGGING} or
-     * {@link com.heaven7.android.scroll.IScrollHelper#SCROLL_STATE_SETTLING}
+     *  @return {@link IScrollHelper#SCROLL_STATE_IDLE}, {@link IScrollHelper#SCROLL_STATE_DRAGGING} or
+     * {@link IScrollHelper#SCROLL_STATE_SETTLING}
      */
     int getScrollState();
 

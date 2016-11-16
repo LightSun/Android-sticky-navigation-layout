@@ -65,7 +65,7 @@ public class NestedScrollFrameLayout extends FrameLayout implements NestedScroll
             }
             @Override
             public int getMaximumYScrollDistance(View target) {
-                return target.getHeight() / 2;
+                return target.getHeight();
             }
         });
         setNestedScrollingEnabled(true);
