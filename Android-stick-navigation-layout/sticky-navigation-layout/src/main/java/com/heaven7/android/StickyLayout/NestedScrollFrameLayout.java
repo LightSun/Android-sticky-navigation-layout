@@ -12,6 +12,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.heaven7.android.scroll.IScrollHelper;
 import com.heaven7.android.scroll.NestedScrollFactory;
 import com.heaven7.android.scroll.NestedScrollHelper;
 
@@ -30,8 +31,6 @@ public class NestedScrollFrameLayout extends FrameLayout implements NestedScroll
 
     private int[] mParentScrollConsumed = new int[2];
     private final int[] mParentOffsetInWindow = new int[2];
-
-    private boolean mNestedScrollInProgress;
 
     public NestedScrollFrameLayout(Context context) {
         this(context, null);
@@ -81,6 +80,32 @@ public class NestedScrollFrameLayout extends FrameLayout implements NestedScroll
         return mNestedHelper.getScrollState();
     }
 
+    /**
+     * add a scroll change listener.
+     * @param l the OnScrollChangeListener
+     */
+    public void addOnScrollChangeListener(IScrollHelper.OnScrollChangeListener l){
+        mNestedHelper.addOnScrollChangeListener(l);
+    }
+
+    /**
+     * remove a scroll change listener.
+     * @param l the OnScrollChangeListener
+     */
+    public void removeOnScrollChangeListener(IScrollHelper.OnScrollChangeListener l){
+        mNestedHelper.removeOnScrollChangeListener(l);
+    }
+
+    /**
+     * judge if has the target OnScrollChangeListener.
+     * @param l the OnScrollChangeListener
+     * @return true if has the target OnScrollChangeListener
+     */
+    public boolean hasOnScrollChangeListener(IScrollHelper.OnScrollChangeListener l){
+        return mNestedHelper.hasOnScrollChangeListener(l);
+    }
+
+
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         if(!isNestedScrollingEnabled()){
@@ -113,7 +138,6 @@ public class NestedScrollFrameLayout extends FrameLayout implements NestedScroll
         mNestedScrollingParentHelper.onNestedScrollAccepted(child, target, nestedScrollAxes);
         // Dispatch up to the nested parent
         startNestedScroll(nestedScrollAxes & ViewCompat.SCROLL_AXIS_VERTICAL);
-        mNestedScrollInProgress  = true;
     }
 
     @Override
@@ -140,7 +164,6 @@ public class NestedScrollFrameLayout extends FrameLayout implements NestedScroll
     @Override
     public void onStopNestedScroll(View target) {
         mNestedScrollingParentHelper.onStopNestedScroll(target);
-        mNestedScrollInProgress = false;
 
         // Dispatch up our nested parent
         stopNestedScroll();

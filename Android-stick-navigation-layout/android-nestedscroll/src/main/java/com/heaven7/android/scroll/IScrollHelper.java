@@ -3,7 +3,7 @@ package com.heaven7.android.scroll;
 import android.view.View;
 
 /**
- * the scroll helper. this define a specification of scroll. help to handle the scroll.
+ * the scroll helper. this define a specification of scroll. help to fast handle the scroll.
  * Created by heaven7 on 2016/11/15.
  */
 public interface IScrollHelper {

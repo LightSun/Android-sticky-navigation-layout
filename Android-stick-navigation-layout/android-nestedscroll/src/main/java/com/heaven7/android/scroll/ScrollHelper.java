@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.OverScroller;
 
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * <p>
@@ -23,7 +23,7 @@ public class ScrollHelper implements IScrollHelper {
 
     private static final long ANIMATED_SCROLL_GAP = 250;
 
-    private final ArrayList<OnScrollChangeListener> mScrollListeners = new ArrayList<>(5);
+    private CopyOnWriteArrayList<OnScrollChangeListener> mScrollListeners;
     private final OverScroller mScroller;
     protected final ScrollCallback mCallback;
     protected final String mTag;
@@ -37,7 +37,8 @@ public class ScrollHelper implements IScrollHelper {
     private int mScrollState = SCROLL_STATE_IDLE;
 
     /**
-     *  create a ScrollHelper.
+     * create a ScrollHelper.
+     *
      * @param target   the target view
      * @param scroller the over Scroller
      * @param callback the callback
@@ -48,6 +49,7 @@ public class ScrollHelper implements IScrollHelper {
 
     /**
      * create a ScrollHelper.
+     *
      * @param target      the target view
      * @param sensitivity Multiplier for how sensitive the helper should be about detecting
      *                    the start of a drag. Larger values are more sensitive. 1.0f is normal.
@@ -95,9 +97,11 @@ public class ScrollHelper implements IScrollHelper {
 
         // Invoke listeners last. Subclassed view methods always handle the event first.
         // All internal state is consistent by the time listeners are invoked.
-        for (OnScrollChangeListener l : mScrollListeners) {
-            if (l != null) {
-                l.onScrolled(mTarget, dx, dy);
+        if (mScrollListeners != null && mScrollListeners.size() > 0) {
+            for (OnScrollChangeListener l : mScrollListeners) {
+                if (l != null) {
+                    l.onScrolled(mTarget, dx, dy);
+                }
             }
         }
         // Pass the real deltas to onScrolled, the RecyclerView-specific method.
@@ -153,9 +157,11 @@ public class ScrollHelper implements IScrollHelper {
      * @param state the target scroll state.
      */
     protected void dispatchOnScrollStateChanged(int state) {
-        for (OnScrollChangeListener l : mScrollListeners) {
-            if (l != null) {
-                l.onScrollStateChanged(mTarget, state);
+        if (mScrollListeners != null && mScrollListeners.size() > 0) {
+            for (OnScrollChangeListener l : mScrollListeners) {
+                if (l != null) {
+                    l.onScrollStateChanged(mTarget, state);
+                }
             }
         }
     }
@@ -248,17 +254,22 @@ public class ScrollHelper implements IScrollHelper {
 
     @Override
     public void addOnScrollChangeListener(OnScrollChangeListener l) {
+        if (mScrollListeners == null) {
+            mScrollListeners = new CopyOnWriteArrayList<>();
+        }
         mScrollListeners.add(l);
     }
 
     @Override
     public void removeOnScrollChangeListener(OnScrollChangeListener l) {
-        mScrollListeners.remove(l);
+        if (mScrollListeners != null) {
+            mScrollListeners.remove(l);
+        }
     }
 
     @Override
     public boolean hasOnScrollChangeListener(OnScrollChangeListener l) {
-        return mScrollListeners.contains(l);
+        return mScrollListeners != null && mScrollListeners.contains(l);
     }
 
     /**
@@ -311,12 +322,15 @@ public class ScrollHelper implements IScrollHelper {
 
         /**
          * if can scroll in Horizontal
+         *
          * @param target the target view.
          * @return true if can scroll in Horizontal
          */
         public abstract boolean canScrollHorizontally(View target);
+
         /**
          * if can scroll in Vertical
+         *
          * @param target the target view.
          * @return true if can scroll in Vertical
          */
@@ -324,14 +338,17 @@ public class ScrollHelper implements IScrollHelper {
 
         /**
          * get the maximum x scroll distance of the target view.
+         *
          * @param target the target view.
          * @return the maximum x scroll distance
          */
         public int getMaximumXScrollDistance(View target) {
             return target.getWidth();
         }
+
         /**
          * get the maximum y scroll distance of the target view.
+         *
          * @param target the target view.
          * @return the maximum y scroll distance
          */
@@ -341,6 +358,7 @@ public class ScrollHelper implements IScrollHelper {
 
         /**
          * called in {@link ScrollHelper#dispatchOnScrolled(int, int)}.
+         *
          * @param dx the delta x
          * @param dy the delta y
          */

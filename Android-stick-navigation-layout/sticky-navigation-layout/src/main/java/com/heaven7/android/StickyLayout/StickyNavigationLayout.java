@@ -153,6 +153,31 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
             }
         }
     }
+    /**
+     * add a scroll change listener.
+     * @param l the OnScrollChangeListener
+     */
+    public void addOnScrollChangeListener(IScrollHelper.OnScrollChangeListener l){
+        mNestedHelper.addOnScrollChangeListener(l);
+    }
+
+    /**
+     * remove a scroll change listener.
+     * @param l the OnScrollChangeListener
+     */
+    public void removeOnScrollChangeListener(IScrollHelper.OnScrollChangeListener l){
+        mNestedHelper.removeOnScrollChangeListener(l);
+    }
+
+    /**
+     * judge if has the target OnScrollChangeListener.
+     * @param l the OnScrollChangeListener
+     * @return true if has the target OnScrollChangeListener
+     */
+    public boolean hasOnScrollChangeListener(IScrollHelper.OnScrollChangeListener l){
+        return mNestedHelper.hasOnScrollChangeListener(l);
+    }
+
 
     /**
      * Return the current scrolling state of the RecyclerView.
@@ -198,15 +223,6 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
      */
     public void removeStickyDelegate(IStickyCallback delegate) {
         mGroupCallback.removeStickyDelegate(delegate);
-    }
-
-    /**
-     * set the OnScrollChangeListener
-     *
-     * @param l the listener
-     */
-    public void addOnScrollChangeListener(IScrollHelper.OnScrollChangeListener l) {
-        this.mNestedHelper.addOnScrollChangeListener(l);
     }
 
     @Override
