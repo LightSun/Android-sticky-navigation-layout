@@ -37,6 +37,7 @@ public class ScrollHelper implements IScrollHelper {
     private int mScrollState = SCROLL_STATE_IDLE;
 
     /**
+     *  create a ScrollHelper.
      * @param target   the target view
      * @param scroller the over Scroller
      * @param callback the callback
@@ -46,6 +47,7 @@ public class ScrollHelper implements IScrollHelper {
     }
 
     /**
+     * create a ScrollHelper.
      * @param target      the target view
      * @param sensitivity Multiplier for how sensitive the helper should be about detecting
      *                    the start of a drag. Larger values are more sensitive. 1.0f is normal.

@@ -30,10 +30,25 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
     private int mInitialTouchY;
     private int mLastTouchY;
 
+    /**
+     * create the nested scroll helper. But,the target view must implements interface {@link NestedScrollingChild}.
+     * @param target  the target view
+     * @param scroller  the scroller
+     * @param callback the callback
+     */
     public NestedScrollHelper(View target, OverScroller scroller, NestedScrollCallback callback) {
         this(target, 1, scroller, (NestedScrollingChild) target, callback);
     }
 
+    /**
+     * create the nested scroll helper.
+     * @param target  the target view
+     * @param sensitivity Multiplier for how sensitive the helper should be about detecting
+     *                    the start of a drag. Larger values are more sensitive. 1.0f is normal.
+     * @param scroller  the scroller
+     * @param child the NestedScrollingChild.
+     * @param callback the callback
+     */
     public NestedScrollHelper(View target, float sensitivity, OverScroller scroller, NestedScrollingChild child, NestedScrollCallback callback) {
         super(target, sensitivity, scroller, callback);
         this.mNestedChild = child;
