@@ -2,6 +2,7 @@ package com.heaven7.android.scroll;
 
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.NestedScrollingChild;
+import android.support.v4.view.VelocityTrackerCompat;
 import android.support.v4.view.ViewCompat;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -288,8 +289,12 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
                 mVelocityTracker.addMovement(vtev);
                 eventAddedToVelocityTracker = true;
                 mVelocityTracker.computeCurrentVelocity(1000, getMaxFlingVelocity());
-                final float xvel = (int) mVelocityTracker.getXVelocity();
-                final float yvel = (int) mVelocityTracker.getYVelocity();
+                final float xvel = canScrollHorizontally ?
+                        -VelocityTrackerCompat.getXVelocity(mVelocityTracker, mScrollPointerId) : 0;
+                final float yvel = canScrollVertically ?
+                        -VelocityTrackerCompat.getYVelocity(mVelocityTracker, mScrollPointerId) : 0;
+               /* final float xvel = VelocityTrackerCompat.getXVelocity(mVelocityTracker, mScrollPointerId);
+                final float yvel =VelocityTrackerCompat.getYVelocity(mVelocityTracker, mScrollPointerId);*/
                 // final float xvel = ? -VelocityTrackerCompat.getXVelocity(mVelocityTracker, mScrollPointerId) : 0;
                 if (!((xvel != 0 || yvel != 0) && fling(xvel, yvel))) {
                     setScrollState(SCROLL_STATE_IDLE);
