@@ -73,7 +73,7 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
     private final NestedScrollingParentHelper mNestedScrollingParentHelper;
     private final NestedScrollingChildHelper mNestedScrollingChildHelper;
 
-    private int[] mParentScrollConsumed = new int[2];
+    private final int[] mParentScrollConsumed = new int[2];
     private final int[] mParentOffsetInWindow = new int[2];
 
     private boolean mEnableStickyTouch = true;
