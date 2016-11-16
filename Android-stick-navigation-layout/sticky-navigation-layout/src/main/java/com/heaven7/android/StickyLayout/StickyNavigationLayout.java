@@ -11,6 +11,7 @@ import android.support.v4.view.NestedScrollingParent;
 import android.support.v4.view.NestedScrollingParentHelper;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +20,6 @@ import android.widget.LinearLayout;
 import com.heaven7.android.scroll.IScrollHelper;
 import com.heaven7.android.scroll.NestedScrollFactory;
 import com.heaven7.android.scroll.NestedScrollHelper;
-import com.heaven7.core.util.Logger;
 
 import java.util.ArrayList;
 
@@ -58,9 +58,8 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
     private int mContentId;
 
     private int mTopViewHeight;
-    private boolean mTopHide = false;
 
-    private GroupCallbacks mGroupStickyDelegate;
+    private GroupCallbacks mGroupCallback;
 
     /**
      * auto fit the sticky scroll
@@ -82,7 +81,7 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
     public StickyNavigationLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         //setOrientation(LinearLayout.VERTICAL);
-        mGroupStickyDelegate = new GroupCallbacks();
+        mGroupCallback = new GroupCallbacks();
         mNestedScrollingParentHelper = new NestedScrollingParentHelper(this);
         mNestedScrollingChildHelper = new NestedScrollingChildHelper(this);
         mNestedHelper = NestedScrollFactory.create(this, new NestedScrollHelper.NestedScrollCallback() {
@@ -112,6 +111,7 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
         a.recycle();
 
         //getWindowVisibleDisplayFrame(mExpectTopRect);
+        setNestedScrollingEnabled(true);
     }
 
     @Override
@@ -127,14 +127,14 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        mGroupStickyDelegate.afterOnMeasure(this, mTop, mIndicator, mContentView);
+        mGroupCallback.afterOnMeasure(this, mTop, mIndicator, mContentView);
         if (mEnableStickyTouch && mContentView != null && mIndicator != null) {
             // 设置view的高度 (将mViewPager。的高度设置为  整个 Height - 导航的高度) - 被拦截的child view
             ViewGroup.LayoutParams params = mContentView.getLayoutParams();
             params.height = getMeasuredHeight() - mIndicator.getMeasuredHeight();
             if (DEBUG) {
-                Logger.i(TAG, "onMeasure", "height = " + params.height + ", snv height = " + getMeasuredHeight());
-                Logger.i(TAG, "onMeasure", "---> snv  bottom= " + getBottom());
+                Log.i(TAG, "onMeasure: height = " + params.height + ", snv height = " + getMeasuredHeight());
+                Log.i(TAG, "onMeasure: ---> snv  bottom= " + getBottom());
             }
         }
     }
@@ -143,7 +143,7 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
         if (DEBUG) {
-            Logger.i(TAG, "onLayout");
+            Log.i(TAG, "onLayout");
         }
         if (mEnableStickyTouch && mTop != null) {
             mTopViewHeight = mTop.getMeasuredHeight();
@@ -151,14 +151,6 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
             if (lp instanceof MarginLayoutParams) {
                 mTopViewHeight += ((MarginLayoutParams) lp).topMargin + ((MarginLayoutParams) lp).bottomMargin;
             }
-        }
-    }
-
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-        if (DEBUG) {
-            Logger.i(TAG, "onSizeChanged");
         }
     }
 
@@ -196,7 +188,7 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
      * @param delegate sticky delegate.
      */
     public void addStickyDelegate(IStickyCallback delegate) {
-        mGroupStickyDelegate.addStickyDelegate(delegate);
+        mGroupCallback.addStickyDelegate(delegate);
     }
 
     /**
@@ -205,7 +197,7 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
      * @param delegate sticky delegate.
      */
     public void removeStickyDelegate(IStickyCallback delegate) {
-        mGroupStickyDelegate.removeStickyDelegate(delegate);
+        mGroupCallback.removeStickyDelegate(delegate);
     }
 
     /**
@@ -268,7 +260,6 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
     @Override
     protected Parcelable onSaveInstanceState() {
         final SaveState saveState = new SaveState(super.onSaveInstanceState());
-        saveState.mTopHide = this.mTopHide;
         saveState.mEnableStickyTouch = this.mEnableStickyTouch;
         return saveState;
     }
@@ -278,19 +269,16 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
         super.onRestoreInstanceState(state);
         if (state != null) {
             SaveState ss = (SaveState) state;
-            this.mTopHide = ss.mTopHide;
             this.mEnableStickyTouch = ss.mEnableStickyTouch;
         }
     }
 
     protected static class SaveState extends BaseSavedState {
 
-        boolean mTopHide;
         boolean mEnableStickyTouch;
 
         public SaveState(Parcel source) {
             super(source);
-            mTopHide = source.readByte() == 1;
             mEnableStickyTouch = source.readByte() == 1;
         }
 
@@ -301,7 +289,6 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
         @Override
         public void writeToParcel(Parcel out, int flags) {
             super.writeToParcel(out, flags);
-            out.writeByte((byte) (mTopHide ? 1 : 0));
             out.writeByte((byte) (mEnableStickyTouch ? 1 : 0));
         }
 
