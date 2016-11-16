@@ -2,6 +2,7 @@ package com.heaven7.android.StickyLayout;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.support.v4.view.NestedScrollingChild;
 import android.support.v4.view.NestedScrollingChildHelper;
 import android.support.v4.view.NestedScrollingParent;
@@ -31,6 +32,7 @@ public class NestedScrollFrameLayout extends FrameLayout implements NestedScroll
 
     private int[] mParentScrollConsumed = new int[2];
     private final int[] mParentOffsetInWindow = new int[2];
+    private float mMaxYPercent = 1f;
 
     public NestedScrollFrameLayout(Context context) {
         this(context, null);
@@ -51,6 +53,10 @@ public class NestedScrollFrameLayout extends FrameLayout implements NestedScroll
     }
 
     private void init(Context context, AttributeSet attrs) {
+        final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.NestedScrollFrameLayout);
+        mMaxYPercent = a.getFloat(R.styleable.NestedScrollFrameLayout_nsfl_max_y_percent, 1f);
+        a.recycle();
+
         mNestedScrollingParentHelper = new NestedScrollingParentHelper(this);
         mNestedScrollingChildHelper = new NestedScrollingChildHelper(this);
         mNestedHelper = NestedScrollFactory.create(this, new NestedScrollHelper.NestedScrollCallback() {
@@ -64,10 +70,26 @@ public class NestedScrollFrameLayout extends FrameLayout implements NestedScroll
             }
             @Override
             public int getMaximumYScrollDistance(View target) {
-                return target.getHeight();
+                return (int) (target.getHeight() * mMaxYPercent);
             }
         });
         setNestedScrollingEnabled(true);
+    }
+
+    /**
+     * set the max y percent, default is 1. it is also can assign in xml config.
+     * @param maxYPercent the max y percent
+     */
+    public void setMaximumYPercent(float maxYPercent){
+         this.mMaxYPercent = maxYPercent;
+    }
+
+    /**
+     * get the max y percent , it is used in scroll .
+     * @return  the max y percent
+     */
+    public float getMaximumYPercent(){
+         return this.mMaxYPercent ;
     }
 
     /**

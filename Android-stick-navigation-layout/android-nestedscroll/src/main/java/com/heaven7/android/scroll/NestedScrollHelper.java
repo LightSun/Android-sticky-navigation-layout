@@ -293,9 +293,9 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
                         -VelocityTrackerCompat.getXVelocity(mVelocityTracker, mScrollPointerId) : 0;
                 final float yvel = canScrollVertically ?
                         -VelocityTrackerCompat.getYVelocity(mVelocityTracker, mScrollPointerId) : 0;
-               /* final float xvel = VelocityTrackerCompat.getXVelocity(mVelocityTracker, mScrollPointerId);
+            /*    final float xvel = VelocityTrackerCompat.getXVelocity(mVelocityTracker, mScrollPointerId);
                 final float yvel =VelocityTrackerCompat.getYVelocity(mVelocityTracker, mScrollPointerId);*/
-                // final float xvel = ? -VelocityTrackerCompat.getXVelocity(mVelocityTracker, mScrollPointerId) : 0;
+                // like recycler view
                 if (!((xvel != 0 || yvel != 0) && fling(xvel, yvel))) {
                     setScrollState(SCROLL_STATE_IDLE);
                 }
@@ -434,14 +434,27 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
 
                 velocityX = Math.max(-mMaxFlingVelocity, Math.min(velocityX, mMaxFlingVelocity));
                 velocityY = Math.max(-mMaxFlingVelocity, Math.min(velocityY, mMaxFlingVelocity));
+
+                //mScroller.fling(0, getScrollY(), velocityX, velocityY, 0, 0, 0, mTopViewHeight);
+               // getScrollXY(mTempXY);
+                final int maxX;
+                final int maxY;
+                if(isNestedScrollingEnabled()){
+                    maxX = mCallback.getMaximumXScrollDistance(mTarget);
+                    maxY = mCallback.getMaximumYScrollDistance(mTarget);
+                }else{
+                    final int parentScrollX = mTarget.getParent() != null ? ((View) mTarget.getParent()).getScrollX() : 0;
+                    final int parentScrollY = mTarget.getParent() != null ? ((View) mTarget.getParent()).getScrollY() : 0;
+                    maxX = mCallback.getMaximumXScrollDistance(mTarget) - parentScrollX;
+                    maxY = mCallback.getMaximumYScrollDistance(mTarget) - parentScrollY;
+                }
                 if (DEBUG) {
                     Log.i(mTag, "onFling: after adjust , velocityX = " + velocityX + " ,velocityY = " + velocityY);
+                    Log.i(mTag, "onFling: after adjust , maxX = " + maxX + " ,maxY = " + maxY);
                 }
-                //mScroller.fling(0, getScrollY(), velocityX, velocityY, 0, 0, 0, mTopViewHeight);
-                getScrollXY(mTempXY);
-                getScroller().fling(mTempXY[0], mTempXY[1], (int) velocityX, (int) velocityY,
-                        0, canScrollHorizontal ? mCallback.getMaximumXScrollDistance(mTarget) : 0,
-                        0, canScrollVertical ? mCallback.getMaximumYScrollDistance(mTarget) : 0
+                getScroller().fling(mTarget.getScrollX(), mTarget.getScrollY(), (int) velocityX, (int) velocityY,
+                        0, canScrollHorizontal ? maxX : 0,
+                        0, canScrollVertical ? maxY: 0
                 );
                 ViewCompat.postInvalidateOnAnimation(mTarget);
                 return true;
