@@ -51,6 +51,7 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
      */
     public NestedScrollHelper(View target, float sensitivity, OverScroller scroller, NestedScrollingChild child, NestedScrollCallback callback) {
         super(target, sensitivity, scroller, callback);
+        Util.check(child);
         this.mNestedChild = child;
     }
 

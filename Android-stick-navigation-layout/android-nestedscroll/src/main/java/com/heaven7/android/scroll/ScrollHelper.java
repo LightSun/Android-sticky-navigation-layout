@@ -57,6 +57,9 @@ public class ScrollHelper implements IScrollHelper {
      * @param callback    the callback
      */
     public ScrollHelper(View target, float sensitivity, OverScroller scroller, ScrollCallback callback) {
+        Util.check(target, "target view can't be null.");
+        Util.check(scroller, null);
+        Util.check(callback, "ScrollCallback can't be null");
         final ViewConfiguration vc = ViewConfiguration.get(target.getContext());
         this.mTag = target.getClass().getSimpleName();
         this.mTarget = target;
