@@ -16,13 +16,13 @@ import com.heaven7.android.scroll.NestedScrollFactory;
 import com.heaven7.android.scroll.NestedScrollHelper;
 
 /**
- * this is a sticky header view .
+ * this is a a child of FrameLayout, but can nested as {@link NestedScrollingChild} or {@link NestedScrollingParent}.
+ * it can scroll in vertical.
  * Created by heaven7 on 2016/11/14.
  */
-public class StickyHeaderView extends FrameLayout implements NestedScrollingChild, NestedScrollingParent {
+public class NestedScrollFrameLayout extends FrameLayout implements NestedScrollingChild, NestedScrollingParent {
 
-    private static final String TAG = StickyHeaderView.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final String TAG = NestedScrollFrameLayout.class.getSimpleName();
 
     private NestedScrollingParentHelper mNestedScrollingParentHelper;
     private NestedScrollingChildHelper mNestedScrollingChildHelper;
@@ -33,20 +33,20 @@ public class StickyHeaderView extends FrameLayout implements NestedScrollingChil
 
     private boolean mNestedScrollInProgress;
 
-    public StickyHeaderView(Context context) {
+    public NestedScrollFrameLayout(Context context) {
         this(context, null);
     }
 
-    public StickyHeaderView(Context context, AttributeSet attrs) {
+    public NestedScrollFrameLayout(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public StickyHeaderView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public NestedScrollFrameLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         this(context, attrs, defStyleAttr, 0);
     }
 
     @TargetApi(21)
-    public StickyHeaderView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public NestedScrollFrameLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init(context, attrs);
     }
@@ -63,7 +63,12 @@ public class StickyHeaderView extends FrameLayout implements NestedScrollingChil
             public boolean canScrollVertically(View target) {
                 return true;
             }
+            @Override
+            public int getMaximumYScrollDistance(View target) {
+                return target.getHeight() / 2;
+            }
         });
+        setNestedScrollingEnabled(true);
     }
 
     /**
@@ -78,7 +83,7 @@ public class StickyHeaderView extends FrameLayout implements NestedScrollingChil
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if(!mNestedHelper.isEnabledNestedScroll()){
+        if(!isNestedScrollingEnabled()){
             return super.onInterceptTouchEvent(ev);
         }
         return mNestedHelper.onInterceptTouchEvent(ev);
@@ -86,7 +91,7 @@ public class StickyHeaderView extends FrameLayout implements NestedScrollingChil
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if(!mNestedHelper.isEnabledNestedScroll()){
+        if(!isNestedScrollingEnabled()){
             return super.onTouchEvent(event);
         }
         return mNestedHelper.onTouchEvent(event);

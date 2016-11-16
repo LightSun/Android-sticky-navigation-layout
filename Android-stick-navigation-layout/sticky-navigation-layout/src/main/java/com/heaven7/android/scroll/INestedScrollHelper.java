@@ -14,13 +14,13 @@ public interface INestedScrollHelper extends IScrollHelper{
      * set to enable or disable the nested scroll.
      * @param enable true to enable
      */
-    void setEnableNestedScroll(boolean enable);
+    void setNestedScrollingEnabled(boolean enable);
 
     /**
      * is enabled the nested scroll.
      * @return true to enable.
      */
-    boolean isEnabledNestedScroll();
+    boolean isNestedScrollingEnabled();
 
     /**
      * similar to {@link android.view.ViewGroup#onInterceptTouchEvent(MotionEvent)} , but is a nested scroll implement of it.

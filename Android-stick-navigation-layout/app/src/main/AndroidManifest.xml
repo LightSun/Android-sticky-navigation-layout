@@ -17,6 +17,7 @@
         </activity>
         <activity android:name=".demos.MultiplexStickyNavigationDemo"/>
         <activity android:name=".demos.SimpleStickyNavigationDemo"/>
+        <activity android:name=".demos.TestNestedScrollFrameLayout"/>
     </application>
 
 </manifest>

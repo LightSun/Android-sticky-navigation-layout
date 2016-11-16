@@ -19,14 +19,14 @@ import java.util.ArrayList;
  */
 public class ScrollHelper implements IScrollHelper {
 
-    private static final boolean DEBUG = true;
-    private static final String TAG = ScrollHelper.class.getSimpleName();
+    protected static final boolean DEBUG = true;
 
-    protected static final long ANIMATED_SCROLL_GAP = 250;
+    private static final long ANIMATED_SCROLL_GAP = 250;
 
     private final ArrayList<OnScrollChangeListener> mScrollListeners = new ArrayList<>(5);
     private final OverScroller mScroller;
     protected final ScrollCallback mCallback;
+    protected final String mTag;
     private final View mTarget;
 
     private final int mTouchSlop;
@@ -54,6 +54,7 @@ public class ScrollHelper implements IScrollHelper {
      */
     public ScrollHelper(View target, float sensitivity, OverScroller scroller, ScrollCallback callback) {
         final ViewConfiguration vc = ViewConfiguration.get(target.getContext());
+        this.mTag = target.getClass().getSimpleName();
         this.mTarget = target;
         this.mCallback = callback;
         this.mScroller = scroller;
@@ -128,7 +129,7 @@ public class ScrollHelper implements IScrollHelper {
             return;
         }
         if (DEBUG) {
-            Log.d(TAG, "setting scroll state to " + state + " from " + mScrollState,
+            Log.d(mTag, "setting scroll state to " + state + " from " + mScrollState,
                     new Exception());
         }
         mScrollState = state;
@@ -159,7 +160,7 @@ public class ScrollHelper implements IScrollHelper {
 
     @Override
     public void scrollBy(int dx, int dy) {
-        mTarget.scrollBy(dx, dy);
+        scrollTo(mTarget.getScrollX() + dx, mTarget.getScrollY() + dy);
     }
 
     /**
@@ -240,19 +241,6 @@ public class ScrollHelper implements IScrollHelper {
             // If we don't have any velocity, return false
             return false;
         }
-       /* if (!dispatchNestedPreFling(velocityX, velocityY)) {
-            final boolean canScroll = canScrollHorizontal || canScrollVertical;
-            dispatchNestedFling(velocityX, velocityY, canScroll);
-
-            if (canScroll) {
-                setScrollState(SCROLL_STATE_SETTLING);
-                velocityX = Math.max(-mMaxFlingVelocity, Math.min(velocityX, mMaxFlingVelocity));
-                velocityY = Math.max(-mMaxFlingVelocity, Math.min(velocityY, mMaxFlingVelocity));
-                mScroller.fling(0, getScrollY(), velocityX, velocityY, 0, 0, 0, mTopViewHeight);
-                ViewCompat.postInvalidateOnAnimation(this);
-                return true;
-            }
-        }*/
         return onFling(canScrollHorizontal, canScrollVertical, velocityX, velocityY);
     }
 

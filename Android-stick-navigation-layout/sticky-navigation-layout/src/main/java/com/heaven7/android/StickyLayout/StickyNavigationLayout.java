@@ -385,6 +385,7 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
     @Override
     public void onNestedPreScroll(View target, int dx, int dy, int[] consumed) {
         mNestedHelper.nestedScroll(dx, dy, consumed , true);
+       // Logger.w(TAG, "onNestedPreScroll", "consumed = " + Arrays.toString(consumed));
 
         // Now let our nested parent consume the leftovers
         final int[] parentConsumed = mParentScrollConsumed;

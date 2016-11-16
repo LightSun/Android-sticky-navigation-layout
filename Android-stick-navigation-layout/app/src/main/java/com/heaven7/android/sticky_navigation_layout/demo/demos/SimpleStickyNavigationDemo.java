@@ -33,8 +33,6 @@ public class SimpleStickyNavigationDemo extends BaseActivity {
     @InjectView(R.id.rv)
     RecyclerView mRv_subscribe;
 
-    private final String[] mTitles = new String[] { "简介", "评价", "相关" };
-
     @Override
     protected int getLayoutId() {
         return R.layout.activity_main;
@@ -47,7 +45,6 @@ public class SimpleStickyNavigationDemo extends BaseActivity {
     }
 
     private void initEvents() {
-        //TODO fix StickyHeaderView
     }
     private void initDatas() {
         List<TabFragment.Data> mDatas = new ArrayList<>();
@@ -67,6 +64,6 @@ public class SimpleStickyNavigationDemo extends BaseActivity {
                         });
             }
         });
-        mIndicator.setTitles(mTitles);
+       // mIndicator.setTitles(mTitles);
     }
 }

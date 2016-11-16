@@ -55,11 +55,12 @@
         app:stickyLayout_content_id = "@+id/rv"
         >
 
-        <com.heaven7.android.StickyLayout.StickyHeaderView
+        <com.heaven7.android.StickyLayout.NestedScrollFrameLayout
             android:id="@+id/top_view"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:background="#8800ff00" >
+            android:background="#8800ff00"
+            >
 
             <TextView
                 android:layout_width="wrap_content"
@@ -70,13 +71,13 @@
                 android:text="标题党--嘎嘎"
                 android:textSize="30sp"
                 android:textStyle="bold" />
-        </com.heaven7.android.StickyLayout.StickyHeaderView>
+        </com.heaven7.android.StickyLayout.NestedScrollFrameLayout>
 
         <com.heaven7.android.sticky_navigation_layout.demo.view.SimpleViewPagerIndicator
             android:id="@id/vp_indicator"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="#ffffffff" />
+            android:background="#88000000" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@id/rv"

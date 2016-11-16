@@ -9,13 +9,13 @@ import android.view.VelocityTracker;
 import android.view.View;
 import android.widget.OverScroller;
 
+import com.heaven7.core.util.Logger;
+
 /**
  * nested scroll helper . it can communicate with {@link NestedScrollingChild}.
  * Created by heaven7 on 2016/11/15.
  */
 public class NestedScrollHelper extends ScrollHelper implements INestedScrollHelper {
-
-    private static final String TAG = NestedScrollHelper.class.getSimpleName();
 
     private final NestedScrollingChild mNestedChild;
 
@@ -24,12 +24,9 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
     private final int[] mScrollOffset = new int[2];
     private int mScrollPointerId;
 
-    private VelocityTracker mVelocityTracker;
-    /**
-     * the state of enable nested scroll. default is true.
-     */
-    private boolean mEnabledNestedScroll = true;
+    protected final int[] mTempXY = new int[2];
 
+    private VelocityTracker mVelocityTracker;
     private int mInitialTouchX;
     private int mLastTouchX;
     private int mInitialTouchY;
@@ -45,15 +42,16 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
     }
 
     @Override
-    public void setEnableNestedScroll(boolean enable) {
-        if(mEnabledNestedScroll != enable){
-            this.mEnabledNestedScroll = enable;
+    public void setNestedScrollingEnabled(boolean enable) {
+        if (mNestedChild.isNestedScrollingEnabled() != enable) {
+            mNestedChild.setNestedScrollingEnabled(enable);
             onNestedScrollStateChanged(enable);
         }
     }
+
     @Override
-    public boolean isEnabledNestedScroll() {
-        return mEnabledNestedScroll;
+    public boolean isNestedScrollingEnabled() {
+        return mNestedChild.isNestedScrollingEnabled();
     }
 
     @Override
@@ -102,7 +100,7 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
             case MotionEvent.ACTION_MOVE:
                 final int index = ev.findPointerIndex(mScrollPointerId);
                 if (index < 0) {
-                    Log.e(TAG, "Error processing scroll; pointer index for id " +
+                    Log.e(mTag, "Error processing scroll; pointer index for id " +
                             mScrollPointerId + " not found. Did any MotionEvents get skipped?");
                     return false;
                 }
@@ -113,6 +111,9 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
                 if (getScrollState() != SCROLL_STATE_DRAGGING) {
                     final int dx = x - mInitialTouchX;
                     final int dy = y - mInitialTouchY;
+                   /* if(DEBUG) {
+                        Logger.i(mTag, "onInterceptTouchEvent", String.format("ACTION_MOVE : (dx = %d ,dy = %d )", dx, dy));
+                    }*/
 
                     boolean startScroll = false;
                     if (canScrollHorizontally && Math.abs(dx) > mTouchSlop) {
@@ -202,7 +203,7 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
                 //we should follow the nested standard of Google.
                 final int index = event.findPointerIndex(mScrollPointerId);
                 if (index < 0) {
-                    Log.e(TAG, "Error processing scroll; pointer index for id " +
+                    Log.e(mTag, "Error processing scroll; pointer index for id " +
                             mScrollPointerId + " not found. Did any MotionEvents get skipped?");
                     return false;
                 }
@@ -211,7 +212,14 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
                 int dx = mLastTouchX - x;
                 int dy = mLastTouchY - y;
 
+              /*  if(DEBUG) {
+                    Logger.i(mTag, "onTouchEvent", String.format("before --- dispatchNestedPreScroll ----  (dx = %d ,dy = %d )", dx, dy));
+                }*/
+
                 if (mNestedChild.dispatchNestedPreScroll(dx, dy, mScrollConsumed, mScrollOffset)) {
+                    /*if(DEBUG) {
+                        Logger.i(mTag, "onTouchEvent_dispatchNestedPreScroll", "parent consumed: " + Arrays.toString(mScrollConsumed));
+                    }*/
                     dx -= mScrollConsumed[0];
                     dy -= mScrollConsumed[1];
                     vtev.offsetLocation(mScrollOffset[0], mScrollOffset[1]);
@@ -289,14 +297,18 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
         mScrollConsumed[1] = 0;
 
         //here we dispatch scroll later.
-        nestedScroll(dx, dy, mScrollConsumed , false);
+        nestedScroll(dx, dy, mScrollConsumed, false);
         final int consumedX = mScrollConsumed[0];
         final int consumedY = mScrollConsumed[1];
 
         final int unconsumedX = dx - consumedX;
         final int unconsumedY = dy - consumedY;
 
-        if (mNestedChild.dispatchNestedScroll(mScrollConsumed[0], mScrollConsumed[1], unconsumedX, unconsumedY, mScrollOffset)) {
+        if (DEBUG) {
+            Logger.i(mTag, "nestedScrollBy", "before dispatchNestedScroll--> consumedX = " + consumedX + " ,consumedY = " + consumedY +
+                    " ,unconsumedX = " + unconsumedX + " ,unconsumedY = " + unconsumedY);
+        }
+        if (mNestedChild.dispatchNestedScroll(consumedX, consumedY, unconsumedX, unconsumedY, mScrollOffset)) {
             // Update the last touch co-ords, taking any scroll offset into account
             mLastTouchX -= mScrollOffset[0];
             mLastTouchY -= mScrollOffset[1];
@@ -312,7 +324,7 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
       /* if (!awakenScrollBars()) {
            getTarget().invalidate();
        }*/
-        return mScrollConsumed[0] != 0 || mScrollConsumed[1] != 0;
+        return consumedX != 0 || consumedY != 0;
     }
 
     @Override
@@ -323,12 +335,27 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
             consumed = new int[2];
         }
         // Logger.i(TAG, "scrollInternal", "dx = " + dx + ",dy = " + dy + " ,consumed = " + Arrays.toString(consumed));
+
+        getScrollXY(mTempXY);
         final View target = getTarget();
-        final ScrollCallback mCallback = this.mCallback;
         final int maxX = mCallback.getMaximumXScrollDistance(target);
         final int maxY = mCallback.getMaximumYScrollDistance(target);
-        final int scrollX = target.getScrollX();  // >0
-        final int scrollY = target.getScrollY();
+
+        final int scrollX = mTempXY[0];
+        final int scrollY = mTempXY[1];
+
+        // isNestedScrollingEnabled()
+        /** parent scroll done(but child's scroll x and y is zero.) , child can continue scroll ?
+         * see this log:
+         I/StickyNavigationLayout: called [ nestedScroll() ]: (scrollX = 0 ,scrollY = 525, maxX = 1080 ,maxY = 525)
+         I/StickyNavigationLayout: called [ nestedScroll() ]: (scrollX = 0 ,scrollY = 525, maxX = 1080 ,maxY = 525)
+         I/NestedScrollFrameLayout: called [ nestedScroll() ]: (scrollX = 0 ,scrollY = 0, maxX = 1080 ,maxY = 262)
+         I/NestedScrollFrameLayout: called [ nestedScrollBy() ]: before dispatchNestedScroll--> consumedX = 0 ,consumedY = 1 ,unconsumedX = 15 ,unconsumedY = 0
+         */
+        if (DEBUG) {
+            Logger.i(mTag, "nestedScroll", String.format("(scrollX = %d ,scrollY = %d, maxX = %d ,maxY = %d)",
+                    scrollX, scrollY, maxX, maxY));
+        }
 
         int by = 0;
         if (mCallback.canScrollVertically(target)) {
@@ -364,7 +391,7 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
             }
         }
         scrollBy(bx, by);
-        if(dispatchScroll){
+        if (dispatchScroll) {
             if (bx != 0 || by != 0) {
                 dispatchOnScrolled(bx, by);
             }
@@ -374,6 +401,10 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
 
     @Override
     protected boolean onFling(boolean canScrollHorizontal, boolean canScrollVertical, float velocityX, float velocityY) {
+        if (DEBUG) {
+            Logger.i(mTag, "onFling", "velocityX = " + velocityX + " ,velocityY = " + velocityY);
+            return false;
+        }
         if (!mNestedChild.dispatchNestedPreFling(velocityX, velocityY)) {
             final boolean canScroll = canScrollHorizontal || canScrollVertical;
             mNestedChild.dispatchNestedFling(velocityX, velocityY, canScroll);
@@ -385,8 +416,12 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
 
                 velocityX = Math.max(-mMaxFlingVelocity, Math.min(velocityX, mMaxFlingVelocity));
                 velocityY = Math.max(-mMaxFlingVelocity, Math.min(velocityY, mMaxFlingVelocity));
+                if (DEBUG) {
+                    Logger.i(mTag, "onFling", "after adjust , velocityX = " + velocityX + " ,velocityY = " + velocityY);
+                }
                 //mScroller.fling(0, getScrollY(), velocityX, velocityY, 0, 0, 0, mTopViewHeight);
-                getScroller().fling(mTarget.getScrollX(), mTarget.getScrollY(), (int) velocityX, (int) velocityY,
+                getScrollXY(mTempXY);
+                getScroller().fling(mTempXY[0], mTempXY[1], (int) velocityX, (int) velocityY,
                         0, canScrollHorizontal ? mCallback.getMaximumXScrollDistance(mTarget) : 0,
                         0, canScrollVertical ? mCallback.getMaximumYScrollDistance(mTarget) : 0
                 );
@@ -398,7 +433,33 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
     }
 
     /**
-     * called in {@link #setEnableNestedScroll(boolean)}, when the nested scroll enable state changed.
+     * get the scroll x and y of the current view.
+     *
+     * @param scrollXY the array of scroll x and y. can be null.
+     * @return the array of scroll x and y.
+     */
+    protected int[] getScrollXY(int[] scrollXY) {
+        if (scrollXY == null) {
+            scrollXY = new int[2];
+        }
+        final View target = getTarget();
+        final NestedScrollCallback mCallback = (NestedScrollCallback) this.mCallback;
+        final int parentScrollX = target.getParent() != null ? ((View) target.getParent()).getScrollX() : 0;
+        final int parentScrollY = target.getParent() != null ? ((View) target.getParent()).getScrollY() : 0;
+
+        if (isNestedScrollingEnabled()) {
+            scrollXY[0] = mCallback.adjustScrollX(target, parentScrollX, mCallback.getMaximumXScrollDistance(target));
+            scrollXY[1] = mCallback.adjustScrollY(target, parentScrollY, mCallback.getMaximumYScrollDistance(target));
+        } else {
+            scrollXY[0] = target.getScrollX();
+            scrollXY[1] = target.getScrollY();
+        }
+        return scrollXY;
+    }
+
+    /**
+     * called in {@link #setNestedScrollingEnabled(boolean)} (boolean)}, when the nested scroll enable state changed.
+     *
      * @param enable true to enable
      */
     protected void onNestedScrollStateChanged(boolean enable) {
@@ -415,7 +476,8 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
 
     protected void resetTouch() {
         if (mVelocityTracker != null) {
-            mVelocityTracker.clear();
+            mVelocityTracker.recycle();
+            mVelocityTracker = null;
         }
         mNestedChild.stopNestedScroll();
         //TODO releaseGlows();
@@ -433,7 +495,7 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
     }
 
     /**
-     * the callback of {@link NestedScrollHelper}.
+     * the callback of {@link NestedScrollHelper}. this class help we handle the nested scrolling.
      */
     public static abstract class NestedScrollCallback extends ScrollCallback {
         /**
@@ -455,6 +517,34 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
         public boolean forceInterceptTouchEvent(NestedScrollHelper helper, MotionEvent ev) {
 
             return false;
+        }
+
+        /**
+         * adjust the current scroll y of the target view. This give a chance to adjust it.
+         * this is only called when {@link NestedScrollHelper#isNestedScrollingEnabled()} is true.
+         * But, you should care about it when you want to change.
+         *
+         * @param target        the target view
+         * @param parentScrollY the scroll y of the parent view
+         * @param maxY          the max y . which comes from {@link #getMaximumYScrollDistance(View)}.
+         * @return the current scroll y.
+         */
+        public int adjustScrollY(View target, int parentScrollY, int maxY) {
+            return target.getScrollY() + parentScrollY;
+        }
+
+        /**
+         * adjust the current scroll x of the target view. This give a chance to adjust it.
+         * this is only called when {@link NestedScrollHelper#isNestedScrollingEnabled()} is true.
+         * But, you should care about it when you want to change.
+         *
+         * @param target        the target view
+         * @param parentScrollX the scroll x of the parent view
+         * @param maxX          the max x . which comes from {@link #getMaximumXScrollDistance(View)}.
+         * @return the current scroll x.
+         */
+        public int adjustScrollX(View target, int parentScrollX, int maxX) {
+            return target.getScrollX() + parentScrollX;
         }
     }
 }

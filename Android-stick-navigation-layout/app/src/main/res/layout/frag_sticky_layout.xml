@@ -1,59 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.heaven7.android.StickyLayout.StickyNavigationLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/stickyLayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    app:stickyLayout_content_id="@+id/vp"
-    app:stickyLayout_indicator_id="@+id/vp_indicator"
-    app:stickyLayout_top_id="@+id/top_view"
-    app:stickyLayout_auto_fit_scroll="true"
+                                                         xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                         android:id="@+id/stickyLayout"
+                                                         android:layout_width="match_parent"
+                                                         android:layout_height="match_parent"
+                                                         android:orientation="vertical"
+                                                         app:stickyLayout_auto_fit_scroll="true"
+                                                         app:stickyLayout_content_id="@+id/vp"
+                                                         app:stickyLayout_indicator_id="@+id/vp_indicator"
+                                                         app:stickyLayout_top_id="@+id/top_view"
     >
 
-    <RelativeLayout
-        android:id="@+id/top_view"
+    <com.heaven7.android.StickyLayout.NestedScrollFrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#8800ff00">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/tv_title"
+        <RelativeLayout
+            android:id="@+id/top_view"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_centerVertical="true"
-            android:gravity="center"
-            android:text="标题党--嘎嘎"
-            android:textSize="30sp"
-            android:textStyle="bold" />
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rv_tabs"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:scrollbars="none"
-            android:layout_above="@+id/tv_title"
-            >
-        </android.support.v7.widget.RecyclerView>
+            android:background="#8800ff00">
 
-    </RelativeLayout>
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_centerVertical="true"
+                android:gravity="center"
+                android:text="标题党--嘎嘎"
+                android:textSize="30sp"
+                android:textStyle="bold"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_tabs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/tv_title"
+                android:scrollbars="none"
+                >
+            </android.support.v7.widget.RecyclerView>
+
+        </RelativeLayout>
+    </com.heaven7.android.StickyLayout.NestedScrollFrameLayout>
+
 
     <LinearLayout
         android:id="@+id/fl_subscribe"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:background="@android:color/holo_green_light"
+        android:orientation="vertical"
         android:visibility="gone"
         >
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="10dp"
             android:gravity="center"
+            android:padding="10dp"
             android:text="-----订阅-----"
             android:textSize="30sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_subscribe"
@@ -74,18 +81,18 @@
             android:id="@id/vp_indicator"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="#ffffffff" />
+            android:background="#ffffffff"/>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="5dp"
-            android:background="@mipmap/bg_shadow" />
+            android:background="@mipmap/bg_shadow"/>
     </LinearLayout>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/vp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"/>
 
 
 </com.heaven7.android.StickyLayout.StickyNavigationLayout>
