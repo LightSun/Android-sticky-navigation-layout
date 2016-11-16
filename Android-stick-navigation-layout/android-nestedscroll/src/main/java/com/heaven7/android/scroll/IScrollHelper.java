@@ -143,8 +143,8 @@ public interface IScrollHelper {
          * calculation. In that case, dx and dy will be 0.
          *
          * @param target the target view
-         * @param dx  The amount of horizontal scroll.
-         * @param dy  The amount of vertical scroll.
+         * @param dx  The amount of horizontal scroll. dx > 0 means finger left.
+         * @param dy  The amount of vertical scroll. dy > 0 means finger up.
          */
         void onScrolled(View target, int dx, int dy);
     }

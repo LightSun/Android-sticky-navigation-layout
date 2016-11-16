@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 
 import com.heaven7.adapter.QuickRecycleViewAdapter;
 import com.heaven7.android.StickyLayout.StickyNavigationLayout;
+import com.heaven7.android.sticky_navigation_layout.demo.OnScrollChangeSupplier;
 import com.heaven7.android.sticky_navigation_layout.demo.R;
 import com.heaven7.android.sticky_navigation_layout.demo.StickyDelegateSupplier;
 import com.heaven7.android.sticky_navigation_layout.demo.view.SimpleViewPagerIndicator;
@@ -93,6 +94,9 @@ public class StickyFragment extends BaseFragment {
                 mIndicator.scroll(position, positionOffset);
             }
         });
+        if( getContext() instanceof OnScrollChangeSupplier){
+            mStickyNavLayout.addOnScrollChangeListener(((OnScrollChangeSupplier) getContext()).getOnScrollChangeListener());
+        }
     }
 
     private void switchMode() {
@@ -179,7 +183,7 @@ public class StickyFragment extends BaseFragment {
             final ViewGroup.LayoutParams lp = mVg_subscribe.getLayoutParams();
             lp.height = snv.getMeasuredHeight() - snv.getScrollY();
             mVg_subscribe.setLayoutParams(lp);
-            Logger.i(TAG, "afterOnMeasure" , "mVg_subscribe: height = " + lp.height +" ,snv.scrollY = " + snv.getScrollY());
+          //  Logger.i(TAG, "afterOnMeasure" , "mVg_subscribe: height = " + lp.height +" ,snv.scrollY = " + snv.getScrollY());
         }
     };
 }

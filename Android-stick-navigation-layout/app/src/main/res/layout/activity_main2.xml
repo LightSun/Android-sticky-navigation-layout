@@ -14,13 +14,21 @@
         android:layout_height="match_parent"
         >
 
+        <FrameLayout
+            android:id="@+id/fl_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+        </FrameLayout>
         <RadioGroup
             android:id="@+id/rg"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_gravity="bottom"
             android:layout_alignParentBottom="true"
+            android:layout_gravity="bottom"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
             >
 
             <RadioButton
@@ -53,13 +61,6 @@
                 />
         </RadioGroup>
 
-        <FrameLayout
-            android:id="@+id/fl_content"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="60dp"
-            >
-        </FrameLayout>
     </FrameLayout>
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_label"

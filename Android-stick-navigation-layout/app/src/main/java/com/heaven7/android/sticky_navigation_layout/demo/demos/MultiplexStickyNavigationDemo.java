@@ -4,9 +4,12 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.SparseArray;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
 
+import com.heaven7.android.scroll.IScrollHelper;
+import com.heaven7.android.sticky_navigation_layout.demo.OnScrollChangeSupplier;
 import com.heaven7.android.sticky_navigation_layout.demo.R;
 import com.heaven7.android.sticky_navigation_layout.demo.fragment.BaseFragment;
 import com.heaven7.android.sticky_navigation_layout.demo.fragment.StickyFragment;
@@ -18,9 +21,8 @@ import butterknife.InjectView;
  * this is a multiples demo of sticky .
  * Created by heaven7 on 2016/11/3.
  */
-public class MultiplexStickyNavigationDemo extends AppCompatActivity {
+public class MultiplexStickyNavigationDemo extends AppCompatActivity implements OnScrollChangeSupplier{
 
-    private final SparseArray<BaseFragment> sCache = new SparseArray<>(6);
 
      @InjectView(R.id.rg)
      RadioGroup mRg;
@@ -30,6 +32,8 @@ public class MultiplexStickyNavigationDemo extends AppCompatActivity {
 
      @InjectView(R.id.fl_content)
      ViewGroup mContent;
+
+    private final SparseArray<BaseFragment> sCache = new SparseArray<>(6);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,4 +60,18 @@ public class MultiplexStickyNavigationDemo extends AppCompatActivity {
         mRg.check(R.id.rb_chuzhen);
     }
 
+    @Override
+    public IScrollHelper.OnScrollChangeListener getOnScrollChangeListener() {
+        return mScrollChangeListener;
+    }
+    private final IScrollHelper.OnScrollChangeListener mScrollChangeListener = new IScrollHelper.OnScrollChangeListener() {
+        @Override
+        public void onScrollStateChanged(View target, int state) {
+            //TODO
+        }
+        @Override
+        public void onScrolled(View target, int dx, int dy) {
+            //TODO
+        }
+    };
 }
