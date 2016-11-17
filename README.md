@@ -5,6 +5,12 @@
    
   <img src="/art/sticky_navigation_layout.gif" alt="Demo Screen Capture" width="403px" height="677px"/>
 
+## Gradle config
+
+
+wait...
+
+
 ## 使用说明 wait...
  
   
