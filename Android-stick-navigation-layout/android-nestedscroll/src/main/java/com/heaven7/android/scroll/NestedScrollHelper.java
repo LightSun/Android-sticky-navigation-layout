@@ -364,8 +364,8 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
         final int scrollY = mTempXY[1];
 
         // isNestedScrollingEnabled()
-        /** parent scroll done(but child's scroll x and y is zero.) , child can continue scroll ?
-         * see this log:
+        /** parent scroll done(but child's scroll x and y is zero.) , child can continue scroll ? #getScrollXY(mTempXY); can resolve it.
+         * see this error log:
          I/StickyNavigationLayout: called [ nestedScroll() ]: (scrollX = 0 ,scrollY = 525, maxX = 1080 ,maxY = 525)
          I/StickyNavigationLayout: called [ nestedScroll() ]: (scrollX = 0 ,scrollY = 525, maxX = 1080 ,maxY = 525)
          I/NestedScrollFrameLayout: called [ nestedScroll() ]: (scrollX = 0 ,scrollY = 0, maxX = 1080 ,maxY = 262)
@@ -440,17 +440,17 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
                 final int maxX;
                 final int maxY;
                 if(isNestedScrollingEnabled()){
-                    maxX = mCallback.getMaximumXScrollDistance(mTarget);
-                    maxY = mCallback.getMaximumYScrollDistance(mTarget);
-                }else{
                     final int parentScrollX = mTarget.getParent() != null ? ((View) mTarget.getParent()).getScrollX() : 0;
                     final int parentScrollY = mTarget.getParent() != null ? ((View) mTarget.getParent()).getScrollY() : 0;
                     maxX = mCallback.getMaximumXScrollDistance(mTarget) - parentScrollX;
                     maxY = mCallback.getMaximumYScrollDistance(mTarget) - parentScrollY;
+                }else{
+                    maxX = mCallback.getMaximumXScrollDistance(mTarget);
+                    maxY = mCallback.getMaximumYScrollDistance(mTarget);
                 }
                 if (DEBUG) {
                     Log.i(mTag, "onFling: after adjust , velocityX = " + velocityX + " ,velocityY = " + velocityY);
-                    Log.i(mTag, "onFling: after adjust , maxX = " + maxX + " ,maxY = " + maxY);
+                    Log.i(mTag, "onFling: after adjust , maxX = " + maxX + " ,maxY = " + maxY );
                 }
                 getScroller().fling(mTarget.getScrollX(), mTarget.getScrollY(), (int) velocityX, (int) velocityY,
                         0, canScrollHorizontal ? maxX : 0,
@@ -553,6 +553,7 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
         /**
          * adjust the current scroll y of the target view. This give a chance to adjust it.
          * this is only called when {@link NestedScrollHelper#isNestedScrollingEnabled()} is true.
+         * this if often used in {@link IScrollHelper#scrollBy(int, int)} ]}.
          * But, you should care about it when you want to change.
          *
          * @param target        the target view

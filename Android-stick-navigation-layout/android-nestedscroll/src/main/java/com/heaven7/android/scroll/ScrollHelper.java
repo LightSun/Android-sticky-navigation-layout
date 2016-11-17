@@ -232,6 +232,10 @@ public class ScrollHelper implements IScrollHelper {
     @Override
     public void computeScroll() {
         if (mScroller.computeScrollOffset()) {//true if not finish
+            /*if(DEBUG){
+                Log.i(mTag, "computeScroll: scroll not finished: currX = " + mScroller.getCurrX()
+                        + " ,currY = " + mScroller.getCurrY());
+            }*/
             mTarget.scrollTo(mScroller.getCurrX(), mScroller.getCurrY());
             ViewCompat.postInvalidateOnAnimation(mTarget);
         }
@@ -301,6 +305,11 @@ public class ScrollHelper implements IScrollHelper {
         return false;
     }
 
+    /**
+     * get the scroll state as string log.
+     * @param state the scroll state.
+     * @return the state as string
+     */
     public static String getScrollStateString(int state) {
         switch (state) {
             case SCROLL_STATE_DRAGGING:
