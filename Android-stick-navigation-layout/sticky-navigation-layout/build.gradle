@@ -26,9 +26,9 @@ dependencies {
     //compile 'com.android.support:design:24.2.1'
     //compile 'com.heaven7.core.util:util-v1:1.1.2'
 
-    //compile 'com.heaven7.android.scroll:android-nestedscroll:1.0'
+    //compile 'com.heaven7.android.scroll:android-nestedscroll:1.0.1'
     compile project(':android-nestedscroll')
 }
 
 
-apply from: "bintrayUpload.gradle"
+//apply from: "bintrayUpload.gradle"

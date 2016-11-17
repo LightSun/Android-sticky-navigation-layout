@@ -54,7 +54,7 @@ public interface INestedScrollHelper extends IScrollHelper{
      *
      * @param dx       the delta x, may be negative
      * @param dy       the delta y , may be negative
-     * @param consumed optional , in not null will contains the consumed x and y by this scroll.
+     * @param consumed optional , if not null it will contains the consumed x and y by this scroll.
      * @param dispatchScroll if scrolled , whether dispatch the scroll distance changed or not.
      * @return the consumed x and y as array by this scroll.
      */

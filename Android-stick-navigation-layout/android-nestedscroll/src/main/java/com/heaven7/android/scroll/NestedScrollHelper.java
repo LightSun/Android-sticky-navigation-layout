@@ -126,9 +126,6 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
                 if (getScrollState() != SCROLL_STATE_DRAGGING) {
                     final int dx = x - mInitialTouchX;
                     final int dy = y - mInitialTouchY;
-                   /* if(DEBUG) {
-                        Log.i(mTag, "onInterceptTouchEvent: " + String.format("ACTION_MOVE : (dx = %d ,dy = %d )", dx, dy));
-                    }*/
 
                     boolean startScroll = false;
                     if (canScrollHorizontally && Math.abs(dx) > mTouchSlop) {
@@ -442,15 +439,18 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
                 if(isNestedScrollingEnabled()){
                     final int parentScrollX = mTarget.getParent() != null ? ((View) mTarget.getParent()).getScrollX() : 0;
                     final int parentScrollY = mTarget.getParent() != null ? ((View) mTarget.getParent()).getScrollY() : 0;
-                    maxX = mCallback.getMaximumXScrollDistance(mTarget) - parentScrollX;
-                    maxY = mCallback.getMaximumYScrollDistance(mTarget) - parentScrollY;
+                    maxX = parentScrollX == 0 ? mCallback.getMaximumXScrollDistance(mTarget): 0;
+                    maxY = parentScrollY == 0 ? mCallback.getMaximumYScrollDistance(mTarget): 0;
+                    if(DEBUG){
+                        Log.i(mTag, "onFling: parentScrollX = " + parentScrollX + " ,parentScrollY = " + parentScrollY);
+                    }
                 }else{
                     maxX = mCallback.getMaximumXScrollDistance(mTarget);
                     maxY = mCallback.getMaximumYScrollDistance(mTarget);
                 }
                 if (DEBUG) {
                     Log.i(mTag, "onFling: after adjust , velocityX = " + velocityX + " ,velocityY = " + velocityY);
-                    Log.i(mTag, "onFling: after adjust , maxX = " + maxX + " ,maxY = " + maxY );
+                    Log.i(mTag, "onFling: maxX = " + maxX + " ,maxY = " + maxY );
                 }
                 getScroller().fling(mTarget.getScrollX(), mTarget.getScrollY(), (int) velocityX, (int) velocityY,
                         0, canScrollHorizontal ? maxX : 0,

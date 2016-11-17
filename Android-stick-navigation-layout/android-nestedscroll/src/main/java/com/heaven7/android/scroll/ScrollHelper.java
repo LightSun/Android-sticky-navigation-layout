@@ -232,10 +232,10 @@ public class ScrollHelper implements IScrollHelper {
     @Override
     public void computeScroll() {
         if (mScroller.computeScrollOffset()) {//true if not finish
-            /*if(DEBUG){
+            if(DEBUG){
                 Log.i(mTag, "computeScroll: scroll not finished: currX = " + mScroller.getCurrX()
                         + " ,currY = " + mScroller.getCurrY());
-            }*/
+            }
             mTarget.scrollTo(mScroller.getCurrX(), mScroller.getCurrY());
             ViewCompat.postInvalidateOnAnimation(mTarget);
         }
