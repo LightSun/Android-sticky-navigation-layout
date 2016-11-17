@@ -32,6 +32,10 @@ import java.util.ArrayList;
  *
  * @author heaven7
  * @attr ref com.heaven7.android.sticky_navigation_layout.demo.R.styleable#stickyLayout_content_id
+ * @attr ref com.heaven7.android.sticky_navigation_layout.demo.R.styleable#stickyLayout_top_id
+ * @attr ref com.heaven7.android.sticky_navigation_layout.demo.R.styleable#stickyLayout_indicator_id
+ * @attr ref com.heaven7.android.sticky_navigation_layout.demo.R.styleable#stickyLayout_auto_fit_scroll
+ * @attr ref com.heaven7.android.sticky_navigation_layout.demo.R.styleable#stickyLayout_threshold_percent
  */
 public class StickyNavigationLayout extends LinearLayout implements NestedScrollingParent, NestedScrollingChild {
 
