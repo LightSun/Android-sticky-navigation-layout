@@ -4,8 +4,9 @@
    android 停靠控件， 包含android最新嵌套滑动处理库。 不依赖listView or recyclerView.只要是实现了NestedScrollingChild的控件都可以。
    
   <img src="/art/sticky_navigation_layout.gif" alt="Demo Screen Capture" width="403px" height="677px"/>
-  
-  
+
+## 使用说明 wait...
+ 
   
 ## About me
    * heaven7 
