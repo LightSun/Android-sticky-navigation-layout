@@ -80,7 +80,7 @@ wait...
     方法： void onScrollStateChanged(View target, int state);  状态改变回调
     
            void onScrolled(View target, int dx, int dy);   滑动距离回调 
-                //  ps: dx,dy 带方向的)，比如dx >0 表示手势向上。
+                //  ps: dx,dy 带方向的)，比如dy > 0 表示 手势向上。
 ```
                 
 -  INestedScrollHelper    嵌套滑动处理辅助接口。子类 NestedScrollHelper.
