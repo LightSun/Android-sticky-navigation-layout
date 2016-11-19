@@ -110,6 +110,41 @@
    
    具体可以见 StickyNavigationLayout 源码。 所以处理嵌套滑动用Android-nestedScroll库就对啦. 
    
+   使用 Android-nestedScroll 后的处理滑动7以及 嵌套滑动的核心代码：
+  ```java
+     @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        if(!isNestedScrollingEnabled()){
+            return super.onInterceptTouchEvent(ev);
+        }
+        return mNestedHelper.onInterceptTouchEvent(ev);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if(!isNestedScrollingEnabled()){
+            return super.onTouchEvent(event);
+        }
+        return mNestedHelper.onTouchEvent(event);
+    }
+    @Override
+    public void computeScroll() {
+        mNestedHelper.computeScroll();
+    }
+      @Override
+    public void onNestedPreScroll(View target, int dx, int dy, int[] consumed) {
+        mNestedHelper.nestedScroll(dx, dy, consumed, true);
+
+        // Now let our nested parent consume the leftovers
+        final int[] parentConsumed = mParentScrollConsumed;
+        if (dispatchNestedPreScroll(dx - consumed[0], dy - consumed[1], parentConsumed, null)) {
+            consumed[0] += parentConsumed[0];
+            consumed[1] += parentConsumed[1];
+        }
+    }
+    ...
+    ```
+   
    下面介绍一下 Android-nestedScroll 库.
 
 - IScrollHelper  滑动处理服务的超级接口, 实现类ScrollHelper.
