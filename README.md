@@ -122,6 +122,8 @@ wait...
         public void onScrolled(int dx, int dy);
 ```        
 
+- NestedScrollFactory  创建ScrollHelper和 NestedScrollHelper对象的工厂
+
 ## About me
    * heaven7 
    * email: donshine723@gmail.com or 978136772@qq.com   
