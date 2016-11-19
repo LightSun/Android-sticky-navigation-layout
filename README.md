@@ -110,8 +110,9 @@
    
    具体可以见 StickyNavigationLayout 源码。 所以处理嵌套滑动用Android-nestedScroll库就对啦. 
    
-   使用 Android-nestedScroll 后的处理滑动7以及 嵌套滑动的核心代码：
-  ```java
+   使用 Android-nestedScroll 后的处理 滑动 以及 嵌套滑动 的核心代码：
+   
+```java
      @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         if(!isNestedScrollingEnabled()){
@@ -143,7 +144,7 @@
         }
     }
     ...
-    ```
+```
    
    下面介绍一下 Android-nestedScroll 库.
 
