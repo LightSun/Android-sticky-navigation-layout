@@ -11,7 +11,8 @@
    dependencies {
         //android 嵌套滑动处理库
         compile 'com.heaven7.android.scroll:android-nestedscroll:1.0'
-        //sticky-navigation-layout wait...
+        //sticky-navigation-layout 
+        wait...
    }
 ```
 
@@ -19,9 +20,11 @@
 ## sticky-navigation-layout  使用步骤：
 
 ---原理。
+```java
      停靠控件分成3个部分:  头，head view 
                          停靠: navigation view
                          随手势滚动控件： recyclerView或者其他。
+```
                          
                       
 使用指南：  (demo中已包含复杂的业务或者说布局， 如果仍有问题，可提issue.)
@@ -109,7 +112,7 @@
    
    下面介绍一下 Android-nestedScroll 库.
 
-- IScrollHelper  滑动处理服务的超级接口, 直接子类ScrollHelper.
+- IScrollHelper  滑动处理服务的超级接口, 实现类ScrollHelper.
 
 ```java
      滑动状态的3个常量: 
@@ -165,7 +168,7 @@
                 //  ps: dx,dy 带方向的)，比如dy > 0 表示 手势向上。
 ```
                 
--  INestedScrollHelper    嵌套滑动处理辅助接口。子类 NestedScrollHelper.
+-  INestedScrollHelper    嵌套滑动处理辅助接口。实现类 NestedScrollHelper.
 ```java 
 
     //设置是否启用嵌套滑动, 同NestedScrollingChildHeloer.setNestedScrollingEnabled. 只不过增加状态改变回调
