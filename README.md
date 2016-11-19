@@ -19,11 +19,11 @@ wait...
 
    随着google写了一套嵌套滑动的处理规范， NestedScrollingChild 和 NestedScrollingParent. 但是我们要怎么去实现呢？
    
-   比如我们要写一个支持停靠的自定义控件。而且可内嵌SwipeRefreshLayout和 RecyclerView.那么用嵌套滑动规范就是最佳选择。
+   比如我们要写一个支持停靠的自定义控件。而且可内嵌SwipeRefreshLayout和 RecyclerView.那么用嵌套滑动规范就是
    
-   因为最新的SwipeRefreshLayout和 RecyclerView都针对嵌套滑动做了支持。 我这套库就可以极大简化，代码。具体可以见
+   最佳选择。 因为最新的SwipeRefreshLayout和 RecyclerView都针对嵌套滑动做了支持。 我这套库就可以极大简化代码。
    
-   StickyNavigationLayout 源码。
+   具体可以见 StickyNavigationLayout 源码。 下面介绍一下 Android-nestedScroll 库.
 
 - IScrollHelper  滑动处理服务的超级接口, 直接子类ScrollHelper.
 
