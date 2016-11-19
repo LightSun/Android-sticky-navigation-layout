@@ -7,11 +7,93 @@
 
 ## Gradle config
 
+```java
+   dependencies {
+        //android 嵌套滑动处理库
+        compile 'com.heaven7.android.scroll:android-nestedscroll:1.0'
+        //sticky-navigation-layout wait...
+   }
+```
 
-wait...
+
+## sticky-navigation-layout  使用步骤：
+
+---原理。
+     停靠控件分成3个部分:  头，head view 
+                         停靠: navigation view
+                         随手势滚动控件： recyclerView或者其他。
+                         
+                      
+使用指南：  (demo中已包含复杂的业务或者说布局， 如果仍有问题，可提issue.)
+
+- 1,在xml中添加 停靠控件。如下图.
+```java
+ <com.heaven7.android.StickyLayout.StickyNavigationLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/stickyLayout"
+        android:layout_above="@+id/rg"
+        app:stickyLayout_top_id = "@+id/top_view"   
+        app:stickyLayout_indicator_id = "@+id/vp_indicator"
+        app:stickyLayout_content_id = "@+id/rv"
+        >
+
+        <com.heaven7.android.StickyLayout.NestedScrollFrameLayout
+            android:id="@+id/top_view"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="#8800ff00"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="标题党--嘎嘎"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+        </com.heaven7.android.StickyLayout.NestedScrollFrameLayout>
+
+        <com.heaven7.android.sticky_navigation_layout.demo.view.SimpleViewPagerIndicator
+            android:id="@id/vp_indicator"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#88000000" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@id/rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#44ff0000"
+            android:scrollbars="vertical"
+            >
+        </android.support.v7.widget.RecyclerView>
+
+    </com.heaven7.android.StickyLayout.StickyNavigationLayout>
+    
+```
+ 具体见demo,  其中：
+```java
+/**
+       stickyLayout_top_id         表示 head view 的id.
+       stickyLayout_indicator_id   表示 navigation view 的id.
+       stickyLayout_content_id     表示 下面内容的 view 的 id. 
+       其余还有2个属性:
+             stickyLayout_auto_fit_scroll       滑动完手离开时，是否自动平滑到指定位置, 默认false.
+                                                具体的距离根据 stickyLayout_threshold_percent 来确定。
+             stickyLayout_threshold_percent     自动平滑到位置的 百分比.float类型。不写默认是0.5          
+                                   
+*/
+```
+- NestedScrollFrameLayout 
+        是自定义的另外一个支持嵌套滑动的控件。如果你想你的Header view支持嵌套滑动。
+        用此控件即可。
 
 
-## 使用说明 wait...
 
 ## Android-nestedScroll 库， 说明文档
 
