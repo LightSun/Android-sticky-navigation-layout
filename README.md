@@ -23,7 +23,9 @@ wait...
    
    最佳选择。 因为最新的SwipeRefreshLayout和 RecyclerView都针对嵌套滑动做了支持。 我这套库就可以极大简化代码。
    
-   具体可以见 StickyNavigationLayout 源码。 下面介绍一下 Android-nestedScroll 库.
+   具体可以见 StickyNavigationLayout 源码。 所以处理嵌套滑动用Android-nestedScroll库就对啦. 
+   
+   下面介绍一下 Android-nestedScroll 库.
 
 - IScrollHelper  滑动处理服务的超级接口, 直接子类ScrollHelper.
 
