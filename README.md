@@ -1,7 +1,8 @@
 # Android-sticky-navigation-layout
  a lib of android sticky navigation layout , not only contains it, but also contains a lib of 'android-nested-scrolling'.
  
-   android 停靠控件， 包含android最新嵌套滑动处理库。 不依赖listView or recyclerView.只要是实现了NestedScrollingChild的控件都可以。
+   android 停靠控件， 包含android最新嵌套滑动处理库。 不依赖listView or recyclerView.只要是实现了NestedScrollingChild的控件都可以。'
+   通过android-nestedScroll 嵌套滑动处理库， 可完美实现google+效果。
    
   <img src="/art/sticky_navigation_layout.gif" alt="Demo Screen Capture" width="403px" height="677px"/>
 
