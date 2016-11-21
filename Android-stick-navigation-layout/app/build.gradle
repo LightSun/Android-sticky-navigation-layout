@@ -25,13 +25,12 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'
 
-    compile project(':sticky-navigation-layout')
-
     compile 'com.heaven7.core.adapter:adapter:1.8.0'
     compile 'com.heaven7.core.util:util-v1:1.1.2'
 
     compile 'com.jakewharton:butterknife:6.1.0'
 
-
+    //compile project(':sticky-navigation-layout')
+    compile 'com.heaven7.android.StickyLayout:sticky-navigation-layout:1.0'
 
 }
