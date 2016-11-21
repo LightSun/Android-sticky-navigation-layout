@@ -12,7 +12,7 @@
    dependencies {
         //android 嵌套滑动处理库
         compile 'com.heaven7.android.scroll:android-nestedscroll:1.0'
-        //sticky-navigation-layout 
+        //sticky-navigation-layout .have a bug fixed . wait to upload bintray
          compile 'com.heaven7.android.StickyLayout:sticky-navigation-layout:1.0'
    }
 ```
