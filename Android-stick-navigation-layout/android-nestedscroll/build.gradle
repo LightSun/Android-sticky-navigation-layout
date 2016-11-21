@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 
-ext {
+/*ext {
     bintrayRepo = 'maven'
     bintrayName = 'android-nestedscroll'   // Has to be same as your library module name
 
@@ -24,7 +24,7 @@ ext {
     licenseName = 'The Apache Software License, Version 2.0'
     licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
     allLicenses = ["Apache-2.0"]
-}
+}*/
 
 
 android {
@@ -56,6 +56,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.2.1'
 }
 
+apply from: 'bintrayUpload.gradle'
+
 // Place it at the end of the file
-apply from: 'installv1.gradle'
-apply from: 'bintrayv1.gradle'
+//apply from: 'installv1.gradle'
+//apply from: 'bintrayv1.gradle'

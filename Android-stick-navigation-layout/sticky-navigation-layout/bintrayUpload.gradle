@@ -144,7 +144,7 @@ bintray {
         licenses = projectLicenses
         githubRepo = githubRepository        //Optional Github repository
         githubReleaseNotesFile = 'README.md' //Optional Github readme file
-        publish = true
+        publish = false     // can't direct publish now. bintray for secure?
         publicDownloadNumbers = true
         version {
             desc = projectDesc

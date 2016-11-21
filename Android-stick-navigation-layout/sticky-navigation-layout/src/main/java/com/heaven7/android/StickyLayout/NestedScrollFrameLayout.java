@@ -1,6 +1,5 @@
 package com.heaven7.android.StickyLayout;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.v4.view.NestedScrollingChild;
@@ -43,12 +42,7 @@ public class NestedScrollFrameLayout extends FrameLayout implements NestedScroll
     }
 
     public NestedScrollFrameLayout(Context context, AttributeSet attrs, int defStyleAttr) {
-        this(context, attrs, defStyleAttr, 0);
-    }
-
-    @TargetApi(21)
-    public NestedScrollFrameLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
+        super(context, attrs, defStyleAttr);
         init(context, attrs);
     }
 
