@@ -64,6 +64,5 @@ public class SimpleStickyNavigationDemo extends BaseActivity {
                         });
             }
         });
-       // mIndicator.setTitles(mTitles);
     }
 }

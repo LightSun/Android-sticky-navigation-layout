@@ -41,7 +41,6 @@ def javadocName = properties.getProperty("javadoc.name")
 def bintrayRepo = "maven"
 def projectLicenses = ["Apache-2.0"]
 
-version = projectVersionName
 group = projectGroupId      // Maven Group ID for the artifact
 //------------------------------ install ------------------------------------//
 
@@ -114,7 +113,7 @@ artifacts {
     archives sourcesJar
 }
 // javadoc configuration
-/*javadoc {
+javadoc {
     options{
         encoding "UTF-8"
         charSet 'UTF-8'
@@ -123,7 +122,7 @@ artifacts {
         links "http://docs.oracle.com/javase/7/docs/api"
         title javadocName
     }
-}*/
+}
 
 // ---------------- Bintray -------------------------------------
 

@@ -135,6 +135,7 @@ public class StickyFragment extends BaseFragment {
                         });
             }
         });
+
         mIndicator.setTitles(mTitles);
         for (int i = 0; i < mTitles.length; i++) {
             mFragments[i] = TabFragment.newInstance(mTitles[i]);
