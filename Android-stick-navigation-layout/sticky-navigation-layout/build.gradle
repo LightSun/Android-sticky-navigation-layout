@@ -1,12 +1,13 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.2"
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 24
+        targetSdkVersion 26
         versionCode 101
         versionName "1.0.1"
     }
@@ -22,15 +23,24 @@ android {
     }
 }
 
+publish {
+    userOrg = 'lightsun'
+    groupId = 'com.heaven7.android.StickyLayout'
+    artifactId = 'sticky-navigation-layout'
+    desc = 'a lib of android sticky navigation layout.'
+    website = 'https://github.com/LightSun/Android-sticky-navigation-layout'
+    publishVersion = android.defaultConfig.versionName
+}
+
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:24.2.1'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestImplementation 'junit:junit:4.12'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
 
     //compile 'com.android.support:design:24.2.1'
     //compile 'com.heaven7.core.util:util-v1:1.1.2'
 
-    compile 'com.heaven7.android.scroll:android-nestedscroll:1.0'
+    implementation 'com.heaven7.android.scroll:android-nestedscroll:1.0'
 }
 
-apply from: "bintrayUpload.gradle"
+//apply from: "bintrayUpload.gradle"

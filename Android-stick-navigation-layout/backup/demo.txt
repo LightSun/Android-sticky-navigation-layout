@@ -1,0 +1,15 @@
+ private final StickyNavigationLayout.IStickyDelegate mStickyDelegate = new StickyNavigationLayout.IStickyDelegate() {
+        @Override
+        public void afterOnMeasure(StickyNavigationLayout snv, View top, View indicator, View contentView) {
+
+            final ViewGroup.LayoutParams lp = mfL_subscribe_parent.getLayoutParams();
+            if (mMode == MODE_HOME_SUBCRIBE && snv.getScrollY() != 0) {
+                lp.height = snv.getMeasuredHeight() ;
+            }else{
+                int bottomHeight = snv.getResources().getDimensionPixelSize(R.dimen.content_bottom_height);
+                lp.height = contentView.getMeasuredHeight() + bottomHeight;
+            }
+            Logger.w(TAG, "afterOnMeasure", "mVg_subscribe: height = " + lp.height + " ,snv.scrollY = " + snv.getScrollY());
+            Logger.w(TAG, "afterOnMeasure", "rv: " + mRv_departments.getMeasuredHeight());
+        }
+    };

@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <net.medlinker.medlinker.widget.StickyNavigationLayout
+        android:id="@+id/sticky_navigation_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:stickyLayout_auto_fit_scroll="true"
+        app:stickyLayout_content_id="@+id/vp_department"
+        app:stickyLayout_indicator_id="@+id/ll_indicator"
+        app:stickyLayout_top_id="@+id/rl_sticky_top">
+
+        <RelativeLayout
+            android:id="@+id/rl_sticky_top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:paddingLeft="16dp">
+
+            <FrameLayout
+                android:id="@+id/fl_msg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true">
+
+                <ImageView
+                    android:id="@+id/iv_msg"
+                    style="@style/iv_common"
+                    android:layout_marginRight="13dp"
+                    android:scaleType="centerInside"
+                    android:src="@mipmap/ic_msg_4_0" />
+
+                <TextView
+                    android:id="@+id/iv_red"
+                    android:layout_width="16dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_height="16dp"
+                    android:layout_gravity="right|top"
+                    android:background="@drawable/shape_red_circle"
+                    android:gravity="center"
+                    android:text="11"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_26"
+                    android:visibility="visible" />
+
+            </FrameLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:layout_toLeftOf="@id/fl_msg"
+                android:background="@drawable/shape_bg_search"
+                android:padding="4dp">
+
+                <ImageButton
+                    android:id="@+id/ib_search"
+                    style="@style/iv_common"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="2dp"
+                    android:background="@null"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_home_search" />
+
+                <ImageView
+                    android:id="@+id/iv_scan_qr_code"
+                    style="@style/iv_common"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="2dp"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_home_scan_qr_code" />
+
+                <TextView
+                    android:id="@+id/tv_search"
+                    style="@style/et_search"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@id/iv_scan_qr_code"
+                    android:layout_toRightOf="@id/ib_search"
+                    android:hint="@string/hint_search_all"
+                    android:paddingBottom="4dp"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:paddingTop="4dp" />
+            </RelativeLayout>
+        </RelativeLayout>
+
+        <FrameLayout
+            android:id="@+id/fl_subscribe_parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <net.medlinker.medlinker.view.LoadingView
+                android:id="@+id/loading_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+
+            <include layout="@layout/include_home_subcribe" />
+
+        </FrameLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/ll_indicator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp">
+
+            <FrameLayout
+                android:id="@+id/fl_open_subscribe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true">
+                <!-- ImageButton会争抢焦点.导致点击不灵敏 -->
+                <ImageView
+                    android:id="@+id/iv_subscribe_edit"
+                    style="@style/iv_common_centerInside"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="11dp"
+                    android:paddingBottom="5dp"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:paddingTop="5dp"
+                    android:src="@drawable/ic_home_add" />
+            </FrameLayout>
+
+            <org.heaven7.core.view.SlidingTabLayout
+                android:id="@+id/slidingTabLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@id/fl_open_subscribe" />
+        </RelativeLayout>
+
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/vp_department"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </net.medlinker.medlinker.widget.StickyNavigationLayout>
+
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/menu_red"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:visibility="visible"
+        fab:menu_colorNormal="#0064ff"
+        fab:menu_colorPressed="#2272CD"
+        fab:menu_labels_ellipsize="end"
+        fab:menu_labels_singleLine="true">
+
+        <!--fab:menu_backgroundColor="#ccffffff"-->
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/action_add_case"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@mipmap/add_case"
+            app:fab_colorNormal="@color/black"
+            app:fab_colorPressed="@color/black"
+            app:fab_label="@string/case_add_label"
+            fab:fab_size="mini" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/action_add_post"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/add_post"
+            app:fab_colorNormal="@color/black"
+            app:fab_colorPressed="@color/black"
+            fab:fab_label="@string/publish_letter"
+            fab:fab_size="mini" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/action_add_live"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/add_live"
+            app:fab_colorNormal="@color/black"
+            app:fab_colorPressed="@color/black"
+            fab:fab_label="@string/publish_live"
+            fab:fab_size="mini" />
+
+    </com.github.clans.fab.FloatingActionMenu>
+
+
+</RelativeLayout>
+
