@@ -47,10 +47,10 @@ android {
         }
     }
 
-    lintOptions{
+    /*lintOptions{
         abortOnError false
         checkReleaseBuilds false
-    }
+    }*/
 }
 
 publish {

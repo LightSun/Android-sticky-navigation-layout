@@ -74,13 +74,13 @@
         </com.heaven7.android.StickyLayout.NestedScrollFrameLayout>
 
         <com.heaven7.android.sticky_navigation_layout.demo.view.SimpleViewPagerIndicator
-            android:id="@id/vp_indicator"
+            android:id="@+id/vp_indicator"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="#88000000" />
 
         <android.support.v7.widget.RecyclerView
-            android:id="@id/rv"
+            android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#44ff0000"

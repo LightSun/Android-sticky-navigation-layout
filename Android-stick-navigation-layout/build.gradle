@@ -22,7 +22,7 @@ allprojects {
         google()
         jcenter()
     }
-    buildDir = "D:/tmp/${rootProject.name}/${project.name}"
+   // buildDir = "D:/tmp/${rootProject.name}/${project.name}" // conflict with butterknife
     //解决生成javadoc失败导致的上传不了bintray,  so  Disable javadoc check for Bintray upload
     tasks.withType(Javadoc) {
         // options.addStringOption('Xdoclint:none', '-quiet')

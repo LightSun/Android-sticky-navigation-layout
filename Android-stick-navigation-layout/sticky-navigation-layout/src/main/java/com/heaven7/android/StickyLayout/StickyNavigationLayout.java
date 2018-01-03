@@ -131,6 +131,25 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
+        if (mEnableStickyTouch && mContentView != null && mIndicator != null) {
+            // set the height of content view
+            ViewGroup.LayoutParams params = mContentView.getLayoutParams();
+            int expect = getMeasuredHeight() - mIndicator.getMeasuredHeight();
+            //avoid onMeasure all the time
+            if(params.height != expect) {
+                params.height = getMeasuredHeight() - mIndicator.getMeasuredHeight();
+            }
+            if (DEBUG) {
+                Log.i(TAG, "onMeasure: height = " + params.height + ", snv height = " + getMeasuredHeight());
+                Log.i(TAG, "onMeasure: ---> snv  bottom= " + getBottom());
+            }
+        }
+        mGroupCallback.afterOnMeasure(this, mTop, mIndicator, mContentView);
+    }
+   /* @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
         mGroupCallback.afterOnMeasure(this, mTop, mIndicator, mContentView);
         if (mEnableStickyTouch && mContentView != null && mIndicator != null) {
             // 设置view的高度 (将mViewPager。的高度设置为  整个 Height - 导航的高度) - 被拦截的child view
@@ -141,7 +160,7 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
                 Log.i(TAG, "onMeasure: ---> snv  bottom= " + getBottom());
             }
         }
-    }
+    }*/
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
