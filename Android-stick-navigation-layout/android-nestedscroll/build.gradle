@@ -37,8 +37,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 102
-        versionName "1.0.2"
+        versionCode 103
+        versionName "1.0.3"
     }
     buildTypes {
         release {
@@ -47,10 +47,10 @@ android {
         }
     }
 
-    /*lintOptions{
+    lintOptions{
         abortOnError false
         checkReleaseBuilds false
-    }*/
+    }
 }
 
 publish {
@@ -73,3 +73,6 @@ dependencies {
 // Place it at the end of the file
 //apply from: 'installv1.gradle'
 //apply from: 'bintrayv1.gradle'
+task javadoc(type: Javadoc) {
+    options.encoding = "utf-8"
+}

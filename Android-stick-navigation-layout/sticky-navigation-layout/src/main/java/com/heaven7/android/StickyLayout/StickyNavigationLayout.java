@@ -152,7 +152,6 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
 
         mGroupCallback.afterOnMeasure(this, mTop, mIndicator, mContentView);
         if (mEnableStickyTouch && mContentView != null && mIndicator != null) {
-            // 设置view的高度 (将mViewPager。的高度设置为  整个 Height - 导航的高度) - 被拦截的child view
             ViewGroup.LayoutParams params = mContentView.getLayoutParams();
             params.height = getMeasuredHeight() - mIndicator.getMeasuredHeight();
             if (DEBUG) {

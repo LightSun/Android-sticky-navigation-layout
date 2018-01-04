@@ -23,14 +23,16 @@ allprojects {
         jcenter()
     }
    // buildDir = "D:/tmp/${rootProject.name}/${project.name}" // conflict with butterknife
-    //解决生成javadoc失败导致的上传不了bintray,  so  Disable javadoc check for Bintray upload
+    //for bintray so  Disable javadoc check for Bintray upload
     tasks.withType(Javadoc) {
         // options.addStringOption('Xdoclint:none', '-quiet')
         options.addStringOption('X', '-quiet')
         options.addStringOption('encoding', 'UTF-8')
+        options.addStringOption('charSet', 'UTF-8')
     }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
