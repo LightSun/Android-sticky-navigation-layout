@@ -13,7 +13,7 @@
         //android 嵌套滑动处理库
         compile 'com.heaven7.android.scroll:android-nestedscroll:1.0'
         //sticky-navigation-layout .
-         compile 'com.heaven7.android.StickyLayout:sticky-navigation-layout:1.0.1'
+         compile 'com.heaven7.android.StickyLayout:sticky-navigation-layout:1.0.2'
    }
 ```
 
