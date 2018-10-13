@@ -91,6 +91,13 @@ public interface IScrollHelper {
     void computeScroll();
 
     /**
+     * is the scroll finish or not.
+     * @return the scroll finish or not.
+     * @since 1.0.3
+     */
+    boolean isScrollFinish();
+
+    /**
      * Begin a standard fling with an initial velocity along each axis in pixels per second.
      * If the velocity given is below the system-defined minimum this method will return false
      * and no fling will occur.

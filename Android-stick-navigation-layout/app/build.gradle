@@ -35,9 +35,10 @@ dependencies {
     implementation 'com.jakewharton:butterknife:6.1.0'
     annotationProcessor 'com.jakewharton:butterknife:6.1.0'
 
-    //implementation project(':android-nestedscroll')
-    implementation 'com.heaven7.android.scroll:android-nestedscroll:1.0'
-    implementation project(':sticky-navigation-layout')
-    //implementation 'com.heaven7.android.StickyLayout:sticky-navigation-layout:1.0.1'
+    implementation project(':android-nestedscroll')
+    implementation 'com.heaven7.android.StickyLayout:sticky-navigation-layout:1.0.2'
+
+    //implementation 'com.heaven7.android.scroll:android-nestedscroll:1.0'
+    //implementation project(':sticky-navigation-layout')
 
 }

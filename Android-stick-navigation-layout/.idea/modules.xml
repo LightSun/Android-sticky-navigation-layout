@@ -5,7 +5,6 @@
       <module fileurl="file://$PROJECT_DIR$/Android-stick-navigation-layout.iml" filepath="$PROJECT_DIR$/Android-stick-navigation-layout.iml" />
       <module fileurl="file://$PROJECT_DIR$/android-nestedscroll/android-nestedscroll.iml" filepath="$PROJECT_DIR$/android-nestedscroll/android-nestedscroll.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/sticky-navigation-layout/sticky-navigation-layout.iml" filepath="$PROJECT_DIR$/sticky-navigation-layout/sticky-navigation-layout.iml" />
     </modules>
   </component>
 </project>

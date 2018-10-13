@@ -19,7 +19,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class ScrollHelper implements IScrollHelper {
 
-    /*protected*/ static final boolean DEBUG = false;
+    /*protected*/ static final boolean DEBUG = Util.sDEBUG;
 
     private static final long ANIMATED_SCROLL_GAP = 250;
 
@@ -239,6 +239,11 @@ public class ScrollHelper implements IScrollHelper {
             mTarget.scrollTo(mScroller.getCurrX(), mScroller.getCurrY());
             ViewCompat.postInvalidateOnAnimation(mTarget);
         }
+    }
+
+    @Override
+    public boolean isScrollFinish(){
+        return mScroller.isFinished();
     }
 
     @Override
