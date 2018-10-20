@@ -78,8 +78,8 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
         boolean canScrollHorizontally = mCallback.canScrollHorizontally(getTarget());
         boolean canScrollVertically = mCallback.canScrollVertically(getTarget());
 
-        final int action = MotionEventCompat.getActionMasked(ev);
-        final int actionIndex = MotionEventCompat.getActionIndex(ev);
+        final int action = ev.getActionMasked();
+        final int actionIndex = ev.getActionIndex();
         final int mTouchSlop = getTouchSlop();
 
         switch (action) {
@@ -106,7 +106,7 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
                 mNestedChild.startNestedScroll(nestedScrollAxis);
                 break;
 
-            case MotionEventCompat.ACTION_POINTER_DOWN:
+            case MotionEvent.ACTION_POINTER_DOWN:
                 mScrollPointerId = ev.getPointerId(actionIndex);
                 mInitialTouchX = mLastTouchX = (int) (ev.getX(actionIndex) + 0.5f);
                 mInitialTouchY = mLastTouchY = (int) (ev.getY(actionIndex) + 0.5f);
@@ -142,7 +142,7 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
                 }
                 break;
 
-            case MotionEventCompat.ACTION_POINTER_UP: {
+            case MotionEvent.ACTION_POINTER_UP: {
                 onPointerUp(ev);
             }
             break;
@@ -172,8 +172,8 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
         boolean eventAddedToVelocityTracker = false;
 
         final MotionEvent vtev = MotionEvent.obtain(event);
-        final int action = MotionEventCompat.getActionMasked(event);
-        final int actionIndex = MotionEventCompat.getActionIndex(event);
+        final int action = event.getActionMasked();
+        final int actionIndex = event.getActionIndex();
 
         final NestedScrollCallback mCallback = (NestedScrollCallback) this.mCallback;
         final int mTouchSlop = getTouchSlop();
@@ -204,7 +204,7 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
             }
             break;
 
-            case MotionEventCompat.ACTION_POINTER_DOWN: {
+            case MotionEvent.ACTION_POINTER_DOWN: {
                 mScrollPointerId = event.getPointerId(actionIndex);
                 mInitialTouchX = mLastTouchX = (int) (event.getX(actionIndex) + 0.5f);
                 mInitialTouchY = mLastTouchY = (int) (event.getY(actionIndex) + 0.5f);
@@ -273,7 +273,7 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
             }
             break;
 
-            case MotionEventCompat.ACTION_POINTER_UP: {
+            case MotionEvent.ACTION_POINTER_UP: {
                 onPointerUp(event);
             }
             break;
@@ -515,7 +515,7 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
     }
 
     protected void onPointerUp(MotionEvent e) {
-        final int actionIndex = MotionEventCompat.getActionIndex(e);
+        final int actionIndex = e.getActionIndex();
         if (e.getPointerId(actionIndex) == mScrollPointerId) {
             // Pick a new pointer to pick up the slack.
             final int newIndex = actionIndex == 0 ? 1 : 0;
