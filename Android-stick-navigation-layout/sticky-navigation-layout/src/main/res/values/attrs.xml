@@ -9,6 +9,13 @@
     </declare-styleable>
 
     <declare-styleable name="NestedScrollFrameLayout">
+        <!-- deprecated -->
         <attr name="nsfl_max_y_percent"  format="float|reference"/>
+        <!-- added in '1.0.3'  -->
+        <attr name="nsfl_max_percent"  format="float|reference"/>
+        <attr name="nsfl_orientation"  format="enum">
+            <enum name="horizontal" value="0"/>
+            <enum name="vertical" value="1"/>
+        </attr>
     </declare-styleable>
 </resources>

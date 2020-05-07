@@ -7,7 +7,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.view.NestedScrollingChild;
+import androidx.core.view.NestedScrollingChild2;
+import androidx.core.view.NestedScrollingChild3;
 import androidx.core.view.NestedScrollingChildHelper;
 import androidx.core.view.NestedScrollingParent;
 import androidx.core.view.NestedScrollingParentHelper;
@@ -22,9 +26,14 @@ import com.heaven7.android.scroll.NestedScrollHelper;
  * it can scroll in vertical.
  * Created by heaven7 on 2016/11/14.
  */
-public class NestedScrollFrameLayout extends FrameLayout implements NestedScrollingChild, NestedScrollingParent {
+public class NestedScrollFrameLayout extends FrameLayout implements NestedScrollingChild,
+      /*  NestedScrollingChild2, NestedScrollingChild3,*/
+        NestedScrollingParent {
 
     private static final String TAG = NestedScrollFrameLayout.class.getSimpleName();
+
+    public static final int HORIZONTAL = 0;
+    public static final int VERTICAL = 1;
 
     private NestedScrollingParentHelper mNestedScrollingParentHelper;
     private NestedScrollingChildHelper mNestedScrollingChildHelper;
@@ -32,7 +41,7 @@ public class NestedScrollFrameLayout extends FrameLayout implements NestedScroll
 
     private int[] mParentScrollConsumed = new int[2];
     private final int[] mParentOffsetInWindow = new int[2];
-    private float mMaxYPercent = 1f;
+    private float mMaxPercent = 1f;
 
     public NestedScrollFrameLayout(Context context) {
         this(context, null);
@@ -49,8 +58,14 @@ public class NestedScrollFrameLayout extends FrameLayout implements NestedScroll
 
     private void init(Context context, AttributeSet attrs) {
         final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.NestedScrollFrameLayout);
+        final int orientation;
         try {
-            mMaxYPercent = a.getFloat(R.styleable.NestedScrollFrameLayout_nsfl_max_y_percent, 1f);
+            //just compat old
+            mMaxPercent = a.getFloat(R.styleable.NestedScrollFrameLayout_nsfl_max_y_percent, 1f);
+            if(mMaxPercent == 1f){
+                mMaxPercent = a.getFloat(R.styleable.NestedScrollFrameLayout_nsfl_max_percent, 1f);
+            }
+            orientation = a.getInt(R.styleable.NestedScrollFrameLayout_nsfl_orientation, VERTICAL);
         }finally {
             a.recycle();
         }
@@ -60,34 +75,56 @@ public class NestedScrollFrameLayout extends FrameLayout implements NestedScroll
         mNestedHelper = NestedScrollFactory.create(this, new NestedScrollHelper.NestedScrollCallback() {
             @Override
             public boolean canScrollHorizontally(View target) {
-                return false;
+                return orientation == HORIZONTAL;
             }
             @Override
             public boolean canScrollVertically(View target) {
-                return true;
+                return orientation == VERTICAL;
             }
             @Override
             public int getMaximumYScrollDistance(View target) {
-                return (int) (target.getHeight() * mMaxYPercent);
+                return (int) (target.getHeight() * mMaxPercent);
+            }
+            @Override
+            public int getMaximumXScrollDistance(View target) {
+                return (int) (target.getWidth() * mMaxPercent);
             }
         });
         setNestedScrollingEnabled(true);
     }
-
     /**
      * set the max y percent, default is 1. it is also can assign in xml config.
      * @param maxYPercent the max y percent
      */
-    public void setMaximumYPercent(float maxYPercent){
-         this.mMaxYPercent = maxYPercent;
+    public void setMaximumPercent(float maxYPercent){
+        this.mMaxPercent = maxYPercent;
     }
 
     /**
      * get the max y percent , it is used in scroll .
      * @return  the max y percent
      */
+    public float getMaximumPercent(){
+        return this.mMaxPercent ;
+    }
+    /**
+     * <p>Use {@linkplain #setMaximumPercent(float)} instead</p>
+     * set the max y percent, default is 1. it is also can assign in xml config.
+     * @param maxYPercent the max y percent
+     */
+    @Deprecated
+    public void setMaximumYPercent(float maxYPercent){
+         this.mMaxPercent = maxYPercent;
+    }
+
+    /**
+     *  <p>Use {@linkplain #getMaximumPercent()} instead</p>
+     * get the max y percent , it is used in scroll .
+     * @return  the max y percent
+     */
+    @Deprecated
     public float getMaximumYPercent(){
-         return this.mMaxYPercent ;
+         return this.mMaxPercent ;
     }
 
     /**
@@ -244,4 +281,31 @@ public class NestedScrollFrameLayout extends FrameLayout implements NestedScroll
         return mNestedScrollingChildHelper.dispatchNestedPreFling(velocityX, velocityY);
     }
     //======================== end NestedScrollingChild =====================
+
+    //====================== NestedScrollingChild2 ======================
+    public boolean startNestedScroll(int axes, int type) {
+        return mNestedScrollingChildHelper.startNestedScroll(axes, type);
+    }
+
+    public void stopNestedScroll(int type) {
+        mNestedScrollingChildHelper.stopNestedScroll(type);
+    }
+
+    public boolean hasNestedScrollingParent(int type) {
+        return mNestedScrollingChildHelper.hasNestedScrollingParent(type);
+    }
+
+    public boolean dispatchNestedScroll(int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, @Nullable int[] offsetInWindow, int type) {
+        return mNestedScrollingChildHelper.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow, type);
+    }
+    public boolean dispatchNestedPreScroll(int dx, int dy, @Nullable int[] consumed, @Nullable int[] offsetInWindow, int type) {
+        return mNestedScrollingChildHelper.dispatchNestedPreScroll(dx , dy, consumed, offsetInWindow, type);
+    }
+
+    //=========================== NestedScrollingChild3 ======================
+    public void dispatchNestedScroll(int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed,
+                                     @Nullable int[] offsetInWindow, int type, @NonNull int[] consumed) {
+        mNestedScrollingChildHelper.dispatchNestedScroll(dxConsumed , dyConsumed, dxUnconsumed, dyUnconsumed,
+                offsetInWindow, type, consumed);
+    }
 }
