@@ -6,14 +6,14 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1' //2.2
+        classpath 'com.android.tools.build:gradle:3.4.2' //2.2
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
         //jcenter
        // classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
         //classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.5'
-        classpath 'com.novoda:bintray-release:0.8.0'
+       // classpath 'com.novoda:bintray-release:0.8.0'
     }
 }
 
@@ -21,6 +21,7 @@ allprojects {
     repositories {
         google()
         jcenter()
+        maven { url "https://jitpack.io" }
     }
    // buildDir = "D:/tmp/${rootProject.name}/${project.name}" // conflict with butterknife
     //for bintray so  Disable javadoc check for Bintray upload

@@ -1,12 +1,13 @@
 package com.heaven7.android.sticky_navigation_layout.demo.demos;
 
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.heaven7.android.scroll.IScrollHelper;
 import com.heaven7.android.sticky_navigation_layout.demo.OnScrollChangeSupplier;
@@ -14,8 +15,8 @@ import com.heaven7.android.sticky_navigation_layout.demo.R;
 import com.heaven7.android.sticky_navigation_layout.demo.fragment.BaseFragment;
 import com.heaven7.android.sticky_navigation_layout.demo.fragment.StickyFragment;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 /**
  * this is a multiples demo of sticky .
@@ -24,13 +25,13 @@ import butterknife.InjectView;
 public class MultiplexStickyNavigationDemo extends AppCompatActivity implements OnScrollChangeSupplier{
 
 
-     @InjectView(R.id.rg)
+     @BindView(R.id.rg)
      RadioGroup mRg;
 
-     @InjectView(R.id.drawer_layout)
+     @BindView(R.id.drawer_layout)
      DrawerLayout mDrawerLayout;
 
-     @InjectView(R.id.fl_content)
+     @BindView(R.id.fl_content)
      ViewGroup mContent;
 
     private final SparseArray<BaseFragment> sCache = new SparseArray<>(6);
@@ -40,7 +41,7 @@ public class MultiplexStickyNavigationDemo extends AppCompatActivity implements 
         super.onCreate(savedInstanceState);
        // setContentView(R.layout.activity_main2);
         setContentView(getLayoutInflater().inflate(R.layout.activity_main2, null));
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         sCache.put(R.id.rb_chuzhen,  new StickyFragment());
         sCache.put(R.id.rb_circle,  new StickyFragment());

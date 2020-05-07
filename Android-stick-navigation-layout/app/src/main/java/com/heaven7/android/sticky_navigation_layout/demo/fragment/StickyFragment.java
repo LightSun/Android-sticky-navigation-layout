@@ -2,16 +2,17 @@ package com.heaven7.android.sticky_navigation_layout.demo.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.snackbar.Snackbar;
 import com.heaven7.adapter.QuickRecycleViewAdapter;
 import com.heaven7.android.StickyLayout.StickyNavigationLayout;
 import com.heaven7.android.sticky_navigation_layout.demo.OnScrollChangeSupplier;
@@ -24,7 +25,7 @@ import com.heaven7.core.util.ViewHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.BindView;
 
 /**
  * Created by heaven7 on 2016/11/3.
@@ -37,24 +38,24 @@ public class StickyFragment extends BaseFragment {
     private static final int MODE_SUBSCRIBE  = 2;
     private int mMode = MODE_FEED;
 
-     @InjectView(R.id.stickyLayout)
+     @BindView(R.id.stickyLayout)
      StickyNavigationLayout mStickyNavLayout;
 
-     @InjectView(R.id.vp_indicator)
+     @BindView(R.id.vp_indicator)
      SimpleViewPagerIndicator mIndicator;
-     @InjectView(R.id.vp)
+     @BindView(R.id.vp)
      ViewPager mViewPager;
-     @InjectView(R.id.top_view)
+     @BindView(R.id.top_view)
      View mTopView;
 
-    @InjectView(R.id.fl_subscribe)
+    @BindView(R.id.fl_subscribe)
     ViewGroup mVg_subscribe;
-    @InjectView(R.id.ll_indicator)
+    @BindView(R.id.ll_indicator)
     LinearLayout mLl_indicator;
 
-    @InjectView(R.id.rv_subscribe)
+    @BindView(R.id.rv_subscribe)
     RecyclerView mRv_subscribe;
-    @InjectView(R.id.rv_tabs)
+    @BindView(R.id.rv_tabs)
     RecyclerView mRv_tabs;
 
     private String[] mTitles = new String[] { "简介", "评价", "相关" };

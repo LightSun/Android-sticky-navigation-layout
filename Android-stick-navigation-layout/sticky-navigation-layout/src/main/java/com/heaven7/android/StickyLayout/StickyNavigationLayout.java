@@ -5,17 +5,18 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.v4.view.NestedScrollingChild;
-import android.support.v4.view.NestedScrollingChildHelper;
-import android.support.v4.view.NestedScrollingParent;
-import android.support.v4.view.NestedScrollingParentHelper;
-import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+
+import androidx.core.view.NestedScrollingChild;
+import androidx.core.view.NestedScrollingChildHelper;
+import androidx.core.view.NestedScrollingParent;
+import androidx.core.view.NestedScrollingParentHelper;
+import androidx.core.view.ViewCompat;
 
 import com.heaven7.android.scroll.IScrollHelper;
 import com.heaven7.android.scroll.NestedScrollFactory;
@@ -106,13 +107,16 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
         final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.StickyNavigationLayout);
         // mCodeSet will set stick view from onFinishInflate.
 
-        mTopViewId = a.getResourceId(R.styleable.StickyNavigationLayout_stickyLayout_top_id, 0);
-        mIndicatorId = a.getResourceId(R.styleable.StickyNavigationLayout_stickyLayout_indicator_id, 0);
-        mContentId = a.getResourceId(R.styleable.StickyNavigationLayout_stickyLayout_content_id, 0);
+        try {
+            mTopViewId = a.getResourceId(R.styleable.StickyNavigationLayout_stickyLayout_top_id, 0);
+            mIndicatorId = a.getResourceId(R.styleable.StickyNavigationLayout_stickyLayout_indicator_id, 0);
+            mContentId = a.getResourceId(R.styleable.StickyNavigationLayout_stickyLayout_content_id, 0);
 
-        mAutoFitScroll = a.getBoolean(R.styleable.StickyNavigationLayout_stickyLayout_auto_fit_scroll, false);
-        mAutoFitPercent = a.getFloat(R.styleable.StickyNavigationLayout_stickyLayout_threshold_percent, 0.5f);
-        a.recycle();
+            mAutoFitScroll = a.getBoolean(R.styleable.StickyNavigationLayout_stickyLayout_auto_fit_scroll, false);
+            mAutoFitPercent = a.getFloat(R.styleable.StickyNavigationLayout_stickyLayout_threshold_percent, 0.5f);
+        }finally {
+            a.recycle();
+        }
 
         //getWindowVisibleDisplayFrame(mExpectTopRect);
         setNestedScrollingEnabled(true);
@@ -137,7 +141,7 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
             int expect = getMeasuredHeight() - mIndicator.getMeasuredHeight();
             //avoid onMeasure all the time
             if(params.height != expect) {
-                params.height = getMeasuredHeight() - mIndicator.getMeasuredHeight();
+                params.height = expect;
             }
             if (DEBUG) {
                 Log.i(TAG, "onMeasure: height = " + params.height + ", snv height = " + getMeasuredHeight());
@@ -346,7 +350,7 @@ public class StickyNavigationLayout extends LinearLayout implements NestedScroll
     /**
      * the internal group Sticky Delegate.
      */
-    private class GroupCallbacks implements IStickyCallback {
+    private static class GroupCallbacks implements IStickyCallback {
 
         private final ArrayList<IStickyCallback> mDelegates = new ArrayList<>(5);
 

@@ -2,11 +2,12 @@ package com.heaven7.android.sticky_navigation_layout.demo.demos;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.snackbar.Snackbar;
 import com.heaven7.adapter.QuickRecycleViewAdapter;
 import com.heaven7.android.StickyLayout.StickyNavigationLayout;
 import com.heaven7.android.sticky_navigation_layout.demo.R;
@@ -17,7 +18,7 @@ import com.heaven7.core.util.ViewHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.BindView;
 
 /**
  * this is a simple demo of sticky navigation layout..
@@ -25,12 +26,12 @@ import butterknife.InjectView;
  */
 public class SimpleStickyNavigationDemo extends BaseActivity {
 
-    @InjectView(R.id.stickyLayout)
+    @BindView(R.id.stickyLayout)
     StickyNavigationLayout mStickyNavLayout;
 
-    @InjectView(R.id.vp_indicator)
+    @BindView(R.id.vp_indicator)
     SimpleViewPagerIndicator mIndicator;
-    @InjectView(R.id.rv)
+    @BindView(R.id.rv)
     RecyclerView mRv_subscribe;
 
     @Override

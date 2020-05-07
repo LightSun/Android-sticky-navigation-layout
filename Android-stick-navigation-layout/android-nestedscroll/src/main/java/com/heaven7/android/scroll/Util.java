@@ -6,7 +6,7 @@ import android.text.TextUtils;
  * internal util class
  * Created by heaven7 on 2016/11/16.
  */
- public class Util {
+ /*public*/ final class Util {
 
      static boolean sDEBUG = false;
 

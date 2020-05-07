@@ -1,13 +1,14 @@
 package com.heaven7.android.scroll;
 
-import android.support.v4.view.NestedScrollingChild;
-import android.support.v4.view.VelocityTrackerCompat;
-import android.support.v4.view.ViewCompat;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.widget.OverScroller;
+
+import androidx.core.view.NestedScrollingChild;
+import androidx.core.view.VelocityTrackerCompat;
+import androidx.core.view.ViewCompat;
 
 /**
  * nested scroll helper . it can communicate with {@link NestedScrollingChild}.
@@ -286,9 +287,9 @@ public class NestedScrollHelper extends ScrollHelper implements INestedScrollHel
                 eventAddedToVelocityTracker = true;
                 mVelocityTracker.computeCurrentVelocity(1000, getMaxFlingVelocity());
                 final float xvel = canScrollHorizontally ?
-                        -VelocityTrackerCompat.getXVelocity(mVelocityTracker, mScrollPointerId) : 0;
+                        -mVelocityTracker.getXVelocity(mScrollPointerId) : 0;
                 final float yvel = canScrollVertically ?
-                        -VelocityTrackerCompat.getYVelocity(mVelocityTracker, mScrollPointerId) : 0;
+                        -mVelocityTracker.getYVelocity(mScrollPointerId) : 0;
             /*    final float xvel = VelocityTrackerCompat.getXVelocity(mVelocityTracker, mScrollPointerId);
                 final float yvel =VelocityTrackerCompat.getYVelocity(mVelocityTracker, mScrollPointerId);*/
                 // like recycler view

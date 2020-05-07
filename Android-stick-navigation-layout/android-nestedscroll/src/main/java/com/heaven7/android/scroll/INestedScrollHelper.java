@@ -1,7 +1,8 @@
 package com.heaven7.android.scroll;
 
-import android.support.v4.view.NestedScrollingChild;
 import android.view.MotionEvent;
+
+import androidx.core.view.NestedScrollingChild;
 
 /**
  * an expand interface of {@link IScrollHelper}

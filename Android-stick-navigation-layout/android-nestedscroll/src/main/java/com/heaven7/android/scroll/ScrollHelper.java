@@ -1,12 +1,13 @@
 package com.heaven7.android.scroll;
 
-import android.support.v4.view.ViewCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.OverScroller;
+
+import androidx.core.view.ViewCompat;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 

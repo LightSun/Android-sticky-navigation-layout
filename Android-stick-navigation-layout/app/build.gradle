@@ -1,13 +1,14 @@
 apply plugin: 'com.android.application'
+apply from: '../androidx_compat.gradle'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
 
     defaultConfig {
         applicationId "com.heaven7.android.sticky_navigation_layout.demo"
-        minSdkVersion 14
-        targetSdkVersion 26
+        minSdkVersion 19
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
     }
@@ -21,24 +22,35 @@ android {
         abortOnError false
         checkReleaseBuilds false
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
     //compile fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation 'junit:junit:4.12'
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support:design:26.1.0'
+    //implementation 'com.android.support:appcompat-v7:26.1.0'
+    //implementation 'com.android.support:design:26.1.0'
 
-    implementation 'com.heaven7.core.adapter:adapter:1.8.8'
-    implementation 'com.heaven7.core.util:util-v1:1.1.2'
+    implementation 'com.github.LightSun:SuperAdapter:2.1.7-x'
+    implementation('com.github.LightSun:util-v1:1.1.7-beta-x') {
+        exclude group: 'com.android.support'
+        exclude group: 'com.heaven7.android.component'
+    }
 
-    implementation 'com.jakewharton:butterknife:6.1.0'
-    annotationProcessor 'com.jakewharton:butterknife:6.1.0'
+    implementation 'com.jakewharton:butterknife:10.2.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
 
     implementation project(':android-nestedscroll')
-    implementation('com.heaven7.android.StickyLayout:sticky-navigation-layout:1.0.2'){
-        exclude group:'com.heaven7.android.scroll'
-    }
+    implementation project(':sticky-navigation-layout')
+
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
+    //implementation 'com.android.support:swiperefreshlayout:28.0.0'
+    /* implementation('com.heaven7.android.StickyLayout:sticky-navigation-layout:1.0.2'){
+         exclude group:'com.heaven7.android.scroll'
+     }*/
 
     //implementation 'com.heaven7.android.scroll:android-nestedscroll:1.0'
     //implementation project(':sticky-navigation-layout')

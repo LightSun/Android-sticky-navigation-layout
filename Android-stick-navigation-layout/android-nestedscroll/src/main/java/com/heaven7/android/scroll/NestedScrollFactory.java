@@ -1,8 +1,9 @@
 package com.heaven7.android.scroll;
 
-import android.support.v4.view.NestedScrollingChild;
 import android.view.View;
 import android.widget.OverScroller;
+
+import androidx.core.view.NestedScrollingChild;
 
 /**
  * the scroll factory of {@link ScrollHelper} and  {@link NestedScrollHelper}.

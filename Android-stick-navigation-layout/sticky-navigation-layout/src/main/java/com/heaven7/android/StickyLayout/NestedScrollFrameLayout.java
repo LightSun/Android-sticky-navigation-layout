@@ -2,15 +2,16 @@ package com.heaven7.android.StickyLayout;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.support.v4.view.NestedScrollingChild;
-import android.support.v4.view.NestedScrollingChildHelper;
-import android.support.v4.view.NestedScrollingParent;
-import android.support.v4.view.NestedScrollingParentHelper;
-import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
+
+import androidx.core.view.NestedScrollingChild;
+import androidx.core.view.NestedScrollingChildHelper;
+import androidx.core.view.NestedScrollingParent;
+import androidx.core.view.NestedScrollingParentHelper;
+import androidx.core.view.ViewCompat;
 
 import com.heaven7.android.scroll.IScrollHelper;
 import com.heaven7.android.scroll.NestedScrollFactory;
@@ -48,8 +49,11 @@ public class NestedScrollFrameLayout extends FrameLayout implements NestedScroll
 
     private void init(Context context, AttributeSet attrs) {
         final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.NestedScrollFrameLayout);
-        mMaxYPercent = a.getFloat(R.styleable.NestedScrollFrameLayout_nsfl_max_y_percent, 1f);
-        a.recycle();
+        try {
+            mMaxYPercent = a.getFloat(R.styleable.NestedScrollFrameLayout_nsfl_max_y_percent, 1f);
+        }finally {
+            a.recycle();
+        }
 
         mNestedScrollingParentHelper = new NestedScrollingParentHelper(this);
         mNestedScrollingChildHelper = new NestedScrollingChildHelper(this);

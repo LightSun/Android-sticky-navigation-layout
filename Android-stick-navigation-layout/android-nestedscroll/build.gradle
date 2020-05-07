@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
+//apply plugin: 'com.novoda.bintray-release'
+apply from: '../androidx_compat.gradle'
 
 /*
 ext {
@@ -31,12 +32,12 @@ ext {
 
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.2"
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
 
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 26
+        minSdkVersion 19
+        targetSdkVersion 28
         versionCode 103
         versionName "1.0.3"
     }
@@ -53,19 +54,19 @@ android {
     }
 }
 
-publish {
+/*publish {
     userOrg = 'lightsun'
     groupId = 'com.heaven7.android.scroll'
     artifactId = 'android-nestedscroll'
     desc = 'Android Library to make handle nested scrolling easilier.'
     website = 'https://github.com/LightSun/Android-sticky-navigation-layout'
     publishVersion = android.defaultConfig.versionName
-}
+}*/
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation 'junit:junit:4.12'
-    implementation 'com.android.support:appcompat-v7:26.1.0'
+    //implementation 'com.android.support:appcompat-v7:26.1.0'
 }
 
 //apply from: 'bintrayUpload.gradle'
