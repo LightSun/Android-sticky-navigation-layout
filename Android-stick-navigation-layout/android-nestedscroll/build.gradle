@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-//apply plugin: 'com.novoda.bintray-release'
+apply plugin: 'com.github.dcendents.android-maven'
 apply from: '../androidx_compat.gradle'
 
 group = 'com.github.LightSun.Android-sticky-navigation-layout'
