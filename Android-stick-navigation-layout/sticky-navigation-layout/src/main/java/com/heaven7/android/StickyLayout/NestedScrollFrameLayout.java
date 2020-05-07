@@ -25,6 +25,8 @@ import com.heaven7.android.scroll.NestedScrollHelper;
  * this is a a child of FrameLayout, but can nested as {@link NestedScrollingChild} or {@link NestedScrollingParent}.
  * it can scroll in vertical.
  * Created by heaven7 on 2016/11/14.
+ * @attr ref R.styleable#NestedScrollFrameLayout_nsfl_max_percent
+ * @attr ref R.styleable#NestedScrollFrameLayout_nsfl_orientation
  */
 public class NestedScrollFrameLayout extends FrameLayout implements NestedScrollingChild,
       /*  NestedScrollingChild2, NestedScrollingChild3,*/

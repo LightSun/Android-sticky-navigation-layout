@@ -2,34 +2,8 @@ apply plugin: 'com.android.library'
 //apply plugin: 'com.novoda.bintray-release'
 apply from: '../androidx_compat.gradle'
 
-/*
-ext {
-    bintrayRepo = 'maven'
-    bintrayName = 'android-nestedscroll'   // Has to be same as your library module name
-
-    publishedGroupId = 'com.heaven7.android.scroll'
-    libraryName = 'android-nestedscroll'
-    artifact = 'android-nestedscroll'     // Has to be same as your library module name
-
-    libraryDescription = 'Android Library to make handle nested scrolling easilier.'
-
-    // Your github repo link
-    siteUrl = 'https://github.com/LightSun/Android-sticky-navigation-layout'
-    gitUrl = 'https://github.com/LightSun/Android-sticky-navigation-layout.git'
-    githubRepository= 'LightSun/Android-sticky-navigation-layout'
-
-    libraryVersion = '1.0.2'
-
-    developerId = 'Heaven7'
-    developerName = 'Chenjun'
-    developerEmail = 'donshine723@gmail.com'
-
-    licenseName = 'The Apache Software License, Version 2.0'
-    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-    allLicenses = ["Apache-2.0"]
-}
-*/
-
+group = 'com.github.LightSun.Android-sticky-navigation-layout'
+version = library_version
 
 android {
     compileSdkVersion 28
@@ -53,15 +27,34 @@ android {
         checkReleaseBuilds false
     }
 }
+//------------ multi lib >>> ------
+task sourcesJar(type: Jar) {
+    //classifier = 'sources'
+    getArchiveClassifier().set('sources')
+    from android.sourceSets.main.javaDirectories
+}
+artifacts {
+    archives sourcesJar
+}
+if (android.productFlavors.size() > 0) {
+    android.libraryVariants.all { variant ->
+        if (variant.name.toLowerCase().contains("debug")) {
+            return
+        }
 
-/*publish {
-    userOrg = 'lightsun'
-    groupId = 'com.heaven7.android.scroll'
-    artifactId = 'android-nestedscroll'
-    desc = 'Android Library to make handle nested scrolling easilier.'
-    website = 'https://github.com/LightSun/Android-sticky-navigation-layout'
-    publishVersion = android.defaultConfig.versionName
-}*/
+        def bundleTask = tasks["bundle${variant.name.capitalize()}"]
+
+        artifacts {
+            archives(bundleTask.archivePath) {
+                classifier variant.flavorName
+                builtBy bundleTask
+                name = project.name
+            }
+        }
+
+    }
+}
+//------------ multi lib  <<< ------
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -69,11 +62,6 @@ dependencies {
     //implementation 'com.android.support:appcompat-v7:26.1.0'
 }
 
-//apply from: 'bintrayUpload.gradle'
-
-// Place it at the end of the file
-//apply from: 'installv1.gradle'
-//apply from: 'bintrayv1.gradle'
 task javadoc(type: Javadoc) {
     options.encoding = "utf-8"
 }
